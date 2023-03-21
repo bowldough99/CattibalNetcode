@@ -44,10 +44,11 @@ public class TestRelay : MonoBehaviour
 
             RelayServerData relayServerData = new RelayServerData(allocation, "dtls");
             NetworkManager.Singleton.GetComponent<UnityTransport>().SetRelayServerData(relayServerData);
-
+            
             NetworkManager.Singleton.StartHost();
 
             CameraManager.Instance.ShowFirstPersonView();
+            NetworkMessenger.Instance.InitializeMessenger(relayServerData);
 
             return joinCode;
         }
@@ -71,6 +72,7 @@ public class TestRelay : MonoBehaviour
             NetworkManager.Singleton.StartClient();
 
             CameraManager.Instance.ShowFirstPersonView();
+            NetworkMessenger.Instance.InitializeMessenger(relayServerData);
         }
         catch (RelayServiceException e)
         {
