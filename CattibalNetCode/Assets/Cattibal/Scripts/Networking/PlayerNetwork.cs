@@ -129,7 +129,7 @@ public class PlayerNetwork : NetworkBehaviour
 
         if (IsOwner)
         {
-            GameObject.FindObjectOfType<TutorialUI>().player = this;
+            GameObject.FindObjectOfType<TutorialUI>(true).player = this;
         }
     }
 
@@ -147,6 +147,7 @@ public class PlayerNetwork : NetworkBehaviour
             moveToSpawn = true;
         }
         if (!IsOwner) return; //anything before only works when IsOwner
+        if (!CattibalGameManager.Instance.IsGamePlaying()) return;
 
         if (Input.GetKeyDown(KeyCode.T))
         {

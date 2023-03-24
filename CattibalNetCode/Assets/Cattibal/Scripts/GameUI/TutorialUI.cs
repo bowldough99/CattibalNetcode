@@ -76,7 +76,10 @@ public class TutorialUI : NetworkBehaviour
     public void ReadyButton()
     {
         if (NetworkManager.Singleton.IsServer)
+        {
             CattibalGameManager.Instance.registerPlayer();
+            player.NotifyClientsReadyClientRpc();
+        }
         else if (NetworkManager.Singleton.IsClient)
         {
             Debug.Log("notify server i is ready");
