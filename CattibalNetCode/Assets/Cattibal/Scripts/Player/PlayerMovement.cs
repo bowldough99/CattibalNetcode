@@ -187,7 +187,6 @@ namespace StarterAssets
                 //_cinemachineVirtualCamera.Follow = transform.Find("PlayerCameraRoot");
                 _cinemachineVirtualCamera.Follow = CinemachineCameraTarget.transform;
             }
-
         }
 
         private void Update()
@@ -195,6 +194,12 @@ namespace StarterAssets
             if (!IsOwner) return;
 
             _hasAnimator = TryGetComponent(out _animator);
+
+            // remove controls when game is not ready
+            if(!CattibalGameManager.Instance.IsGamePlaying())
+            {
+                return;
+            }
 
             JumpAndGravity();
             GroundedCheck();

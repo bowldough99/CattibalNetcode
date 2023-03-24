@@ -126,6 +126,11 @@ public class PlayerNetwork : NetworkBehaviour
         meshRenderer.material = catSkins[Random.Range(0, catSkins.Length)];
         //meshRenderer.material = skinMaterialToUse;
         //Debug.Log(CattibalLobbyManager.KEY_PLAYER_SKIN.ToString());
+
+        if (IsOwner)
+        {
+            GameObject.FindObjectOfType<TutorialUI>().player = this;
+        }
     }
 
     
@@ -136,7 +141,7 @@ public class PlayerNetwork : NetworkBehaviour
 
         if (!moveToSpawn)
         {
-            gameManager.GetComponent<CattibalGameManager>().registerPlayer();
+            //gameManager.GetComponent<CattibalGameManager>().registerPlayer();
             transform.position = gameManager.GetComponent<CattibalGameManager>().getSpawnPoint();
             
             moveToSpawn = true;
@@ -322,6 +327,23 @@ public class PlayerNetwork : NetworkBehaviour
         //Special: this function params allow server to send data to one or more particular ClientId
 
         //targetClientId
+    }
+
+    [ServerRpc(RequireOwnership = false)]
+    public void NotifyReadyServerRpc()
+    {
+        CattibalGameManager.Instance.registerPlayer();
+
+        if(CattibalGameManager.Instance.numOfPlayers == CattibalGameManager.Instance.totalPlayers)
+        {
+            NotifyClientsReadyClientRpc();
+        }
+    }
+
+    [ClientRpc]
+    public void NotifyClientsReadyClientRpc()
+    {
+        CattibalGameManager.Instance.numOfPlayers = CattibalGameManager.Instance.totalPlayers;
     }
 
     private Material GetCatSkins(CattibalLobbyManager.PlayerSkin playerSkin)

@@ -156,6 +156,7 @@ public class CattibalLobbyManager : MonoBehaviour
                         //Lobby host already joined Relay
                         TestRelay.Instance.JoinRelay(joinedLobby.Data[KEY_START_GAME].Value);
                     }
+                    CattibalGameManager.Instance.totalPlayers = joinedLobby.MaxPlayers - joinedLobby.AvailableSlots;
 
                     joinedLobby = null;
 
@@ -457,6 +458,7 @@ public class CattibalLobbyManager : MonoBehaviour
                 });
 
                 joinedLobby = lobby;
+                CattibalGameManager.Instance.totalPlayers = joinedLobby.MaxPlayers - joinedLobby.AvailableSlots;
                 //CameraManager.Instance.ShowFirstPersonView();
                 OnGameStarted?.Invoke(this, EventArgs.Empty);
 

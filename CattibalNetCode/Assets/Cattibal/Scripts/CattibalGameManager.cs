@@ -1,13 +1,18 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.Netcode;
 using UnityEngine;
+using TMPro;
 
 public class CattibalGameManager : MonoBehaviour
 {
     public static CattibalGameManager Instance { get; private set; }
     public int numOfPlayers;
+    public int totalPlayers = -1;
     public static GameObject[] spawnPoints;
+
+    public TextMeshProUGUI countdown;
 
     private enum State
     {
@@ -38,9 +43,15 @@ public class CattibalGameManager : MonoBehaviour
 
     private void Update()
     {
+        Debug.Log(state);
+
         switch (state)
         {
             case State.WaitingToStart:
+                if(numOfPlayers != totalPlayers)
+                {
+                    break;
+                }
                 waitingToStartTimer -= Time.deltaTime;
                 if(waitingToStartTimer < 0f)
                 {
@@ -48,9 +59,12 @@ public class CattibalGameManager : MonoBehaviour
                 }
                 break;
             case State.CountdownToStart:
+                countdown.gameObject.SetActive(true);
                 countdownToStartTimer -= Time.deltaTime;
+                countdown.text = ((int)countdownToStartTimer).ToString();
                 if (countdownToStartTimer < 0f)
                 {
+                    countdown.gameObject.SetActive(false);
                     state = State.GamePlaying;
                 }
                 break;
