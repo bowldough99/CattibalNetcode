@@ -78,7 +78,8 @@ public class TutorialUI : NetworkBehaviour
         if (NetworkManager.Singleton.IsServer)
         {
             CattibalGameManager.Instance.registerPlayer();
-            player.NotifyClientsReadyClientRpc();
+            if (CattibalGameManager.Instance.numOfPlayers == CattibalGameManager.Instance.totalPlayers)
+                player.NotifyClientsReadyClientRpc();
         }
         else if (NetworkManager.Singleton.IsClient)
         {

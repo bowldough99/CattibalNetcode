@@ -190,7 +190,7 @@ public class PlayerNetwork : NetworkBehaviour
         if (hunger.Value == 100)
         {
             healthDecreaseTimer += Time.deltaTime;
-
+        
             if (healthDecreaseTimer >= HEALTH_DECREASE_TIMER_MAX)
             {
                 HealthServerRPC("lose hp", -1);
@@ -202,22 +202,25 @@ public class PlayerNetwork : NetworkBehaviour
         healthBar.updateHP(hp.Value / 100.0f);
         hungerBar.updateHunger(hunger.Value / 100.0f);
 
-    }
-
-    private void FixedUpdate()
-    {
-        if(IsClient && IsOwner)
+        if (IsClient && IsOwner)
         {
 
             if (playerMovement.IsAttacking == true)
             {
-                CheckPunch(playerHand.transform);
+                CheckPunch(transform);
+                //CheckPunch(playerHand.transform);
             }
         }
+
+    }
+
+    private void FixedUpdate()
+    {
     }
 
     private void CheckPunch(Transform hand)
     {
+        Debug.Log("DETROIT SSSSMAAAASSHH");
         RaycastHit hit;
 
         int layerMask = LayerMask.GetMask("Character");
@@ -226,7 +229,7 @@ public class PlayerNetwork : NetworkBehaviour
         if (Physics.Raycast(hand.position, hand.transform.forward, out hit, minimumAttackDistance, layerMask))
         {
             Debug.DrawRay(hand.position, hand.transform.forward * minimumAttackDistance, Color.yellow);
-            var playerHit = hit.transform.GetComponent<NetworkObject>();
+            var playerHit = hit.transform.parent.GetComponent<NetworkObject>();
             if(playerHit != null)
             {
                 UpdateHealthServerRPC(15, playerHit.OwnerClientId);
@@ -244,6 +247,8 @@ public class PlayerNetwork : NetworkBehaviour
             Debug.Log("raycast NOT hitting");
         }
     }
+
+    
 
     private void CheckWeapon()
     {
@@ -294,9 +299,13 @@ public class PlayerNetwork : NetworkBehaviour
     private void UpdateHealthServerRPC(int healthDamaged, ulong clientId)
     {
         var clientDamaged = NetworkManager.Singleton.ConnectedClients[clientId].PlayerObject.GetComponent<PlayerNetwork>();
-        if(clientDamaged != null && clientDamaged.hp.Value > 0 && clientDamaged.hp.Value < 100)
+        if(clientDamaged != null && clientDamaged.hp.Value > 0 && clientDamaged.hp.Value <= 100)
         {
             clientDamaged.hp.Value -= healthDamaged;
+        }
+        else
+        {
+            Debug.Log(string.Format("which lost child is this. {0}", clientId));
         }
 
         NotifyHealthChangedClientRpc(healthDamaged, new ClientRpcParams
