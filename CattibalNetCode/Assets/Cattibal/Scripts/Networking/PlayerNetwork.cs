@@ -13,37 +13,33 @@ using TMPro;
 [RequireComponent(typeof(NetworkTransform))]
 public class PlayerNetwork : NetworkBehaviour
 {
-    private enum Weapon
-    {
-        Catnip,
-        CannedFood,
-        YarnBall,
-        Laser,
-        None,
-    }
-    
-    private Weapon weapon;
-    [SerializeField] private GameObject weaponHeld;
-
     [SerializeField] private Transform spawnedObjectPrefab; //GameObject spawnedObjectPrefab also works but limitation
     private Transform spawnedObjectTransform;
     bool moveToSpawn = false;
-    [SerializeField]private HealthSystem healthSystem;
+
+    [Header("Player Settings")]
     public HealthBar healthBar;
     public HungerBar hungerBar;
 
-    private const int defaultHp = 100; 
-    private const int defaultHunger = 0; 
+    private const int defaultHp = 90; 
+    private const int defaultHunger = 100; 
 
     private NetworkVariable<int> hp = new NetworkVariable<int>(defaultHp);
     private NetworkVariable<int> hunger = new NetworkVariable<int>(defaultHunger);
+    private NetworkVariable<int> lives = new NetworkVariable<int>(9);
 
     private const float HUNGER_INCREASE_TIMER_MAX = 0.5f;
-    private const float HEALTH_DECREASE_TIMER_MAX = 0.5f;
+    private const float HEALTH_DECREASE_TIMER_MAX = 5f;
     private float hungerIncreaseTimer;
     private float healthDecreaseTimer;
 
+    [SerializeField] private Transform playerHand;
+    [SerializeField] private float minimumAttackDistance = 1.0f;
+
+    [Header("Game Settings")]
     [SerializeField] TextMeshPro endGameText;
+    private bool _isAlive = true;
+    public bool IsAlive => lives.Value > 0;
 
     private int skinNumberToSpawn;
 
@@ -51,11 +47,9 @@ public class PlayerNetwork : NetworkBehaviour
     [SerializeField] private Material skinMaterialToUse;
     [SerializeField] private GameObject spawnedPlayerPrefab;
 
-    [SerializeField] private Transform playerHand;
-    [SerializeField] private float minimumAttackDistance = 1.0f;
+    private PlayerMovement playerMovement;
+    private CattibalGameManager gameManager;
 
-    [SerializeField] private PlayerMovement playerMovement;
-    [SerializeField] private CattibalGameManager gameManager;
 
     private NetworkVariable<MyCustomData> playerData = new NetworkVariable<MyCustomData>(
         new MyCustomData {
@@ -63,10 +57,6 @@ public class PlayerNetwork : NetworkBehaviour
             _bool = false,
             _float = 0.2f,
             _health = 100,
-            //hunger = 0,
-            //isAttacked = false,
-            //isAttacking = false,
-            //isHungry = false,
         }, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
     //impt: Network Variable must be initialized if not got error 
 
@@ -118,14 +108,8 @@ public class PlayerNetwork : NetworkBehaviour
             gameManager = GameObject.FindObjectOfType<CattibalGameManager>(true);
         }
 
-        //hp.Value = 100;
-        //hunger.Value = 0;
-        weaponHeld = null;
-
         SkinnedMeshRenderer meshRenderer = spawnedPlayerPrefab.GetComponent<SkinnedMeshRenderer>();
         meshRenderer.material = catSkins[Random.Range(0, catSkins.Length)];
-        //meshRenderer.material = skinMaterialToUse;
-        //Debug.Log(CattibalLobbyManager.KEY_PLAYER_SKIN.ToString());
 
         if (IsOwner)
         {
@@ -133,7 +117,14 @@ public class PlayerNetwork : NetworkBehaviour
         }
     }
 
-    
+    public override void OnNetworkDespawn()
+    {
+        base.OnNetworkDespawn();
+        if (IsClient)
+        {
+            //lives.OnValueChanged -= OnLivesChanged;
+        }
+    }
 
 
     private void Update()
@@ -151,7 +142,7 @@ public class PlayerNetwork : NetworkBehaviour
 
         if (Input.GetKeyDown(KeyCode.T))
         {
-            HealthServerRPC("ATTACK!", -10); //But the client can still press T which shows the Debug in the server logs
+            HealthServerRPC("ATTACK!", -10);
             //TestServerRPC(new ServerRpcParams()); //But the client can still press T which shows the Debug in the server logs
             //TestClientRPC(new ClientRpcParams { Send = new ClientRpcSendParams {TargetClientIds = new List<ulong> { 1 } } }); //But the client can still press T which shows the Debug in the server logs
             //spawnedObjectTransform = Instantiate(spawnedObjectPrefab);
@@ -171,12 +162,7 @@ public class PlayerNetwork : NetworkBehaviour
         if (Input.GetKeyDown(KeyCode.V))
         {
             HealthServerRPC("HEAL!", 5);
-            HungerServerRPC("EAT!", 100);
-            //hp.Value += 10;
-
-            //spawnedObjectTransform.GetComponent<NetworkObject>().Despawn(true);
-            //usefull to use the despawn method if i want to remove it from the network but keep the gameobject alive
-            //Destroy(spawnedObjectTransform.gameObject);
+            HungerServerRPC("EAT!", -100);
         }
 
         hungerIncreaseTimer += Time.deltaTime;
@@ -187,13 +173,13 @@ public class PlayerNetwork : NetworkBehaviour
             hungerIncreaseTimer = 0;
         }
 
-        if (hunger.Value == 100)
+        if (hunger.Value == 0)
         {
             healthDecreaseTimer += Time.deltaTime;
         
             if (healthDecreaseTimer >= HEALTH_DECREASE_TIMER_MAX)
             {
-                HealthServerRPC("lose hp", -1);
+                HealthServerRPC("lose hp", 0); //change this back to a number later
                 healthDecreaseTimer = 0;
             }
             
@@ -207,8 +193,8 @@ public class PlayerNetwork : NetworkBehaviour
 
             if (playerMovement.IsAttacking == true)
             {
-                CheckPunch(transform);
-                //CheckPunch(playerHand.transform);
+                //CheckPunch(transform);
+                CheckPunch(playerHand.transform);
             }
         }
 
@@ -224,7 +210,6 @@ public class PlayerNetwork : NetworkBehaviour
         RaycastHit hit;
 
         int layerMask = LayerMask.GetMask("Character");
-        int layerMask2 = LayerMask.GetMask("Box");
 
         if (Physics.Raycast(hand.position, hand.transform.forward, out hit, minimumAttackDistance, layerMask))
         {
@@ -232,14 +217,10 @@ public class PlayerNetwork : NetworkBehaviour
             var playerHit = hit.transform.parent.GetComponent<NetworkObject>();
             if(playerHit != null)
             {
-                UpdateHealthServerRPC(15, playerHit.OwnerClientId);
+                UpdateHealthServerRPC(10, playerHit.OwnerClientId);
                 Debug.Log(playerHit.OwnerClientId);
             }
             Debug.Log("raycast hitting");
-        }
-        else if(Physics.Raycast(hand.position, hand.transform.forward, out hit, minimumAttackDistance, layerMask2))
-        {
-            Debug.Log("Box hit");
         }
         else
         {
@@ -248,19 +229,10 @@ public class PlayerNetwork : NetworkBehaviour
         }
     }
 
-    
-
-    private void CheckWeapon()
-    {
-        if (weaponHeld == null)
-        {
-            return;
-        }
-    }
 
     [ServerRpc]
     //impt: the name of function must end with ServerRPC
-    private void HealthServerRPC(string message, int healthChange)
+    public void HealthServerRPC(string message, int healthChange)
     //private void TestServerRpc(ServerRpcParams serverRpcParams)
     {
         Debug.Log("HealthServerRPC" + OwnerClientId + "; " + message);
@@ -281,17 +253,17 @@ public class PlayerNetwork : NetworkBehaviour
         //this is a good function to use to get messages from clients if i want the client to not have ownership
     }
     [ServerRpc]
-    private void HungerServerRPC(string message, int hungerChange)
+    public void HungerServerRPC(string message, int hungerChange)
     {
         Debug.Log("HungerServerRPC" + OwnerClientId + "; " + message);
-        hunger.Value -= hungerChange;
-        if (hunger.Value < 0)
-        {
-            hunger.Value = 0;
-        }
+        hunger.Value += hungerChange;
         if (hunger.Value > 100)
         {
             hunger.Value = 100;
+        }
+        if (hunger.Value <= 100)
+        {
+            hunger.Value = 0;
         }
     }
 

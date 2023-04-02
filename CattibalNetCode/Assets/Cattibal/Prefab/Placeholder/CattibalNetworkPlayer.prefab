@@ -19,7 +19,7 @@ GameObject:
   - component: {fileID: 5980211419496031088}
   - component: {fileID: 8317882676193343353}
   - component: {fileID: 8953366851673364985}
-  - component: {fileID: 5046261867739394210}
+  - component: {fileID: -4815646621932345465}
   m_Layer: 8
   m_Name: CattibalNetworkPlayer
   m_TagString: Player
@@ -324,11 +324,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   weaponHeld: {fileID: 0}
+  bulletPrefab: []
+  mybulletPrefab: {fileID: 0}
+  handWeapon: {fileID: 0}
   spawnedObjectPrefab: {fileID: 6498450846513313344, guid: 9532dfe0800764b458846b53fd90ac4a,
     type: 3}
-  healthSystem: {fileID: 5046261867739394210}
   healthBar: {fileID: 0}
   hungerBar: {fileID: 0}
+  playerHand: {fileID: 6240119450795521083}
+  minimumAttackDistance: 100
   endGameText: {fileID: 0}
   catSkins:
   - {fileID: 2100000, guid: 5be5b959e6806fa45ba08b88bee8f9ff, type: 2}
@@ -337,10 +341,6 @@ MonoBehaviour:
   - {fileID: 2100000, guid: 271eb5fb069c2f44ca55f4bae60a343e, type: 2}
   skinMaterialToUse: {fileID: 2100000, guid: 0a5d8ebe39607ec4499ea136b473988f, type: 2}
   spawnedPlayerPrefab: {fileID: 9091180949123740270}
-  playerHand: {fileID: 6240119450795521083}
-  minimumAttackDistance: 100
-  playerMovement: {fileID: 0}
-  gameManager: {fileID: 0}
 --- !u!114 &8953366851673364985
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -355,7 +355,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   TransitionStateInfoList: []
   m_Animator: {fileID: 9092470093647121971}
---- !u!114 &5046261867739394210
+--- !u!114 &-4815646621932345465
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -364,10 +364,16 @@ MonoBehaviour:
   m_GameObject: {fileID: 2559466361327619827}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: afb3afc2c65a3ca499ec886520e45b57, type: 3}
+  m_Script: {fileID: 11500000, guid: c9a4e6e2e9dab5d4fb3d63f188b29543, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  healthAmount: 100
+  playerTransform: {fileID: 2940531375302693961}
+  pickUpLayerMask:
+    serializedVersion: 2
+    m_Bits: 1024
+  playerNetwork: {fileID: 8317882676193343353}
+  weaponUI: {fileID: 0}
+  itemHeld: None
 --- !u!1 &3137603478066432715
 GameObject:
   m_ObjectHideFlags: 0

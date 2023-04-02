@@ -3,16 +3,38 @@ using System.Collections;
 using System.Collections.Generic;
 using Unity.Netcode;
 using UnityEngine;
+using UnityEngine.Assertions;
+using Random = UnityEngine.Random;
 using TMPro;
 
-public class CattibalGameManager : MonoBehaviour
+
+public enum GameOverReason : byte
+{
+    None = 0,
+    LastOneStanding = 1,
+    Death = 2,
+    Max,
+}
+public class CattibalGameManager : NetworkBehaviour
 {
     public static CattibalGameManager Instance { get; private set; }
     public int numOfPlayers;
     public int totalPlayers = -1;
     public static GameObject[] spawnPoints;
 
+    [Header("UI Settings")]
     public TextMeshProUGUI countdown;
+    public TMP_Text gameTimerText;
+    public TMP_Text gameOverText;
+    public TMP_Text livesText;
+
+    private bool ClientGameOver;
+    private bool ClientGameStarted;
+    private bool ClientStartCountdown;
+
+
+    private float timeRemaining;
+    public NetworkVariable<bool> isGameOver { get; } = new NetworkVariable<bool>(false);
 
     private enum State
     {
@@ -25,7 +47,7 @@ public class CattibalGameManager : MonoBehaviour
     private State state;
     private float waitingToStartTimer = 1f;
     private float countdownToStartTimer = 5f;
-    private float gamePlayingTimer = 10f;
+    private float gamePlayingTimer = 200f;
     private float itemSpawnerTimer = 5f;
     private bool canSpawnItem = true;
 
@@ -41,8 +63,11 @@ public class CattibalGameManager : MonoBehaviour
         ShuffleSpawns();
     }
 
+    internal static event Action OnInstanceReady;
+
     private void Update()
     {
+        if (state == State.GameOver) return;
         Debug.Log(state);
 
         switch (state)
@@ -69,7 +94,9 @@ public class CattibalGameManager : MonoBehaviour
                 }
                 break;
             case State.GamePlaying:
+                gameTimerText.gameObject.SetActive(true);
                 gamePlayingTimer -= Time.deltaTime;
+                gameTimerText.text = ((int)gamePlayingTimer).ToString();
                 itemSpawnerTimer -= Time.deltaTime;
                 if (numOfPlayers <= 0)
                 {
@@ -80,13 +107,14 @@ public class CattibalGameManager : MonoBehaviour
                 {
                     itemManager.SpawnItems();
                     canSpawnItem = false;
-                    Debug.Log("Spawning Items");
                 }
                 break;
             case State.GameOver:
+                gameOverText.gameObject.SetActive(true);
                 break;
         }
     }
+
 
     public bool IsGamePlaying()
     {

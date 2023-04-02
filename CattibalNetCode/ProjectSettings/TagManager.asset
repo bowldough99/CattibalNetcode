@@ -6,6 +6,10 @@ TagManager:
   tags:
   - CinemachineTarget
   - Spawn
+  - CannedFood
+  - Catnip
+  - Laser
+  - Yarnball
   layers:
   - Default
   - TransparentFX
@@ -17,7 +21,7 @@ TagManager:
   - 
   - Character
   - Ground
-  - Box
+  - Weapon
   - UICharacter
   - 
   - 
