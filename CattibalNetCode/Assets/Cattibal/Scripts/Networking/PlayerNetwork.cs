@@ -21,8 +21,8 @@ public class PlayerNetwork : NetworkBehaviour
     public HealthBar healthBar;
     public HungerBar hungerBar;
 
-    private const int defaultHp = 90; 
-    private const int defaultHunger = 100; 
+    private const int defaultHp = 90;
+    private const int defaultHunger = 100;
 
     private NetworkVariable<int> hp = new NetworkVariable<int>(defaultHp);
     private NetworkVariable<int> hunger = new NetworkVariable<int>(defaultHunger);
@@ -71,7 +71,7 @@ public class PlayerNetwork : NetworkBehaviour
         public int _maxHealth;
 
         // impt: add a serializer and the : INetworkSerializable to make this work if not got error
-        public void NetworkSerialize<T>(BufferSerializer<T> serializer) where T : IReaderWriter 
+        public void NetworkSerialize<T>(BufferSerializer<T> serializer) where T : IReaderWriter
         {
             serializer.SerializeValue(ref _int);
             serializer.SerializeValue(ref _bool);
@@ -99,7 +99,7 @@ public class PlayerNetwork : NetworkBehaviour
         {
             hungerBar = GameObject.FindObjectOfType<HungerBar>(true);
         }
-        if(playerMovement == null)
+        if (playerMovement == null)
         {
             playerMovement = GetComponent<PlayerMovement>();
         }
@@ -134,7 +134,7 @@ public class PlayerNetwork : NetworkBehaviour
         {
             //gameManager.GetComponent<CattibalGameManager>().registerPlayer();
             transform.position = gameManager.GetComponent<CattibalGameManager>().getSpawnPoint();
-            
+
             moveToSpawn = true;
         }
         if (!IsOwner) return; //anything before only works when IsOwner
@@ -176,13 +176,14 @@ public class PlayerNetwork : NetworkBehaviour
         if (hunger.Value == 0)
         {
             healthDecreaseTimer += Time.deltaTime;
-        
+
             if (healthDecreaseTimer >= HEALTH_DECREASE_TIMER_MAX)
             {
                 HealthServerRPC("lose hp", 0); //change this back to a number later
+                //HealthSourceServerRpc(-5, -1);
                 healthDecreaseTimer = 0;
             }
-            
+
         }
 
         healthBar.updateHP(hp.Value / 100.0f);
@@ -215,9 +216,9 @@ public class PlayerNetwork : NetworkBehaviour
         {
             Debug.DrawRay(hand.position, hand.transform.forward * minimumAttackDistance, Color.yellow);
             var playerHit = hit.transform.parent.GetComponent<NetworkObject>();
-            if(playerHit != null)
+            if (playerHit != null)
             {
-                UpdateHealthServerRPC(10, playerHit.OwnerClientId);
+                UpdateHealthServerRPC(20, playerHit.OwnerClientId);
                 Debug.Log(playerHit.OwnerClientId);
             }
             Debug.Log("raycast hitting");
@@ -229,6 +230,42 @@ public class PlayerNetwork : NetworkBehaviour
         }
     }
 
+    [ServerRpc]
+    public void HealthSourceServerRpc(int healthChange, int id)
+    {
+        hp.Value += healthChange;
+        if (hp.Value > 100)
+        {
+            hp.Value = 100;
+        }
+
+        if (hp.Value <= 0)
+        {
+            hp.Value = 0;
+            if (id < 0)
+            {
+                //UIKillMessages.instance.AddStarveMessage(OwnerClientId.ToString());
+                NotifyStarveClientRpc(OwnerClientId.ToString());
+            }
+            else
+            {
+                //UIKillMessages.instance.AddKillMessage(id.ToString(), OwnerClientId.ToString());
+                NotifyKillClientRpc(id.ToString(), OwnerClientId.ToString());
+            }
+        }
+    }
+
+    [ClientRpc]
+    public void NotifyKillClientRpc(string killer, string killee)
+    {
+        UIKillMessages.instance.AddKillMessage(killer, killee);
+    }
+
+    [ClientRpc]
+    public void NotifyStarveClientRpc(string victim)
+    {
+        UIKillMessages.instance.AddStarveMessage(victim);
+    }
 
     [ServerRpc]
     //impt: the name of function must end with ServerRPC
@@ -271,9 +308,10 @@ public class PlayerNetwork : NetworkBehaviour
     private void UpdateHealthServerRPC(int healthDamaged, ulong clientId)
     {
         var clientDamaged = NetworkManager.Singleton.ConnectedClients[clientId].PlayerObject.GetComponent<PlayerNetwork>();
-        if(clientDamaged != null && clientDamaged.hp.Value > 0 && clientDamaged.hp.Value <= 100)
+        if (clientDamaged != null && clientDamaged.hp.Value > 0 && clientDamaged.hp.Value <= 100)
         {
-            clientDamaged.hp.Value -= healthDamaged;
+            //clientDamaged.hp.Value -= healthDamaged;
+            clientDamaged.NotifyDamageClientRpc(-healthDamaged, (int)OwnerClientId);
         }
         else
         {
@@ -284,11 +322,17 @@ public class PlayerNetwork : NetworkBehaviour
         {
             Send = new ClientRpcSendParams
             {
-                TargetClientIds = new ulong[] {clientId}
+                TargetClientIds = new ulong[] { clientId }
             }
         });
 
         Debug.Log("health changing");
+    }
+
+    [ClientRpc]
+    public void NotifyDamageClientRpc(int damage, int source)
+    {
+        HealthSourceServerRpc(damage, source);
     }
 
     [ClientRpc]
