@@ -96,7 +96,7 @@ public class CattibalGameManager : NetworkBehaviour
             case State.GamePlaying:
                 gameTimerText.gameObject.SetActive(true);
                 gamePlayingTimer -= Time.deltaTime;
-                gameTimerText.text = ((int)gamePlayingTimer).ToString();
+                UpdateGameTimer(gamePlayingTimer);
                 itemSpawnerTimer -= Time.deltaTime;
                 if (numOfPlayers <= 0)
                 {
@@ -153,5 +153,15 @@ public class CattibalGameManager : NetworkBehaviour
     public Vector3 getSpawnPoint()
     {
         return spawnPoints[numOfPlayers].GetComponent<Transform>().position;
+    }
+
+    void UpdateGameTimer(float currentTime)
+    {
+        currentTime += 1;
+
+        float minutes = Mathf.FloorToInt(currentTime / 60);
+        float seconds = Mathf.FloorToInt(currentTime % 60);
+
+        gameTimerText.text = String.Format("{0:00} : {1:00}", minutes, seconds);
     }
 }

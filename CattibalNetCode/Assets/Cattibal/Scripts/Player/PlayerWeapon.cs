@@ -74,11 +74,25 @@ public class PlayerWeapon : NetworkBehaviour
                             weaponUI.itemNumber = 3;
                             //Debug.Log("i collected a" + itemHeld);
                         }
-                        else if (raycastHit.transform.gameObject.tag == "Laser")
+                        else if (raycastHit.transform.gameObject.tag == "Box")
                         {
                             raycastHit.transform.gameObject.GetComponent<NetworkObject>().Despawn();
-                            itemHeld = "Laser";
+                            itemHeld = "Box";
                             weaponUI.itemNumber = 4;
+                            //Debug.Log("i collected a" + itemHeld);
+                        }
+                        else if (raycastHit.transform.gameObject.tag == "FishBone")
+                        {
+                            raycastHit.transform.gameObject.GetComponent<NetworkObject>().Despawn();
+                            itemHeld = "FishBone";
+                            weaponUI.itemNumber = 5;
+                            //Debug.Log("i collected a" + itemHeld);
+                        }
+                        else if (raycastHit.transform.gameObject.tag == "Milk")
+                        {
+                            raycastHit.transform.gameObject.GetComponent<NetworkObject>().Despawn();
+                            itemHeld = "Milk";
+                            weaponUI.itemNumber = 6;
                             //Debug.Log("i collected a" + itemHeld);
                         }
 
@@ -107,7 +121,17 @@ public class PlayerWeapon : NetworkBehaviour
                 playerNetwork.HealthServerRPC("HEAL!", 10);
                 itemHeld = "None";
             }
-            else if (itemHeld == "Laser")
+            else if (itemHeld == "Box")
+            {
+                playerNetwork.HealthServerRPC("HEAL!", 10);
+                itemHeld = "None";
+            }
+            else if (itemHeld == "FishBone")
+            {
+                playerNetwork.HealthServerRPC("HEAL!", 10);
+                itemHeld = "None";
+            }
+            else if (itemHeld == "Milk")
             {
                 playerNetwork.HealthServerRPC("HEAL!", 10);
                 itemHeld = "None";
