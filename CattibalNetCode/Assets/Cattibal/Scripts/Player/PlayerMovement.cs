@@ -462,7 +462,18 @@ namespace StarterAssets
             if (CanAttack)
             {
                 // Attack
-                if (_input.attack && _attackTimeoutDelta <= 0.0f)
+                //if (_input.attack && _attackTimeoutDelta <= 0.0f)
+                //{
+                //    _attackTimeoutDelta = AttackTimeout;
+                //
+                //    if (_hasAnimator)
+                //    {
+                //        _animator.SetBool(_animIDAttack, true);
+                //    }
+                //    CanAttack = false;
+                //    IsAttacking = true;
+                //}
+                if (IsOwner && UnityEngine.Input.GetMouseButtonDown(0) && _attackTimeoutDelta <= 0.0f)
                 {
                     _attackTimeoutDelta = AttackTimeout;
 

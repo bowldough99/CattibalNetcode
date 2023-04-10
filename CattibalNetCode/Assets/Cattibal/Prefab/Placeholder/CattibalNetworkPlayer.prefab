@@ -323,15 +323,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1451ac4e603076444972874b8d26d499, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  weaponHeld: {fileID: 0}
-  bulletPrefab: []
-  mybulletPrefab: {fileID: 0}
-  handWeapon: {fileID: 0}
   spawnedObjectPrefab: {fileID: 6498450846513313344, guid: 9532dfe0800764b458846b53fd90ac4a,
     type: 3}
   healthBar: {fileID: 0}
   hungerBar: {fileID: 0}
-  playerHand: {fileID: 6240119450795521083}
+  playerHand: {fileID: 3791217138845952919}
   minimumAttackDistance: 100
   endGameText: {fileID: 0}
   catSkins:
@@ -535,6 +531,37 @@ Transform:
   m_Father: {fileID: 8856788324225090299}
   m_RootOrder: -1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &9126975200431083419
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 3791217138845952919}
+  m_Layer: 0
+  m_Name: Claw
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &3791217138845952919
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9126975200431083419}
+  m_LocalRotation: {x: 0, y: -0.7071068, z: 0, w: 0.7071068}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 4858818825871330953}
+  m_RootOrder: -1
+  m_LocalEulerAnglesHint: {x: 0, y: -90, z: 0}
 --- !u!1001 &4926141271965562527
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -4919,16 +4946,20 @@ PrefabInstance:
         type: 3}
       insertIndex: -1
       addedObject: {fileID: 7886671757171193775}
+    - targetCorrespondingSourceObject: {fileID: -8705222124053235690, guid: 87db2e598e7a2454b9a1722ce6ee9e24,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 3791217138845952919}
   m_SourcePrefab: {fileID: 100100000, guid: 87db2e598e7a2454b9a1722ce6ee9e24, type: 3}
---- !u!4 &4888536579864826228 stripped
+--- !u!4 &4858818825871330953 stripped
 Transform:
-  m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 87db2e598e7a2454b9a1722ce6ee9e24,
+  m_CorrespondingSourceObject: {fileID: -8705222124053235690, guid: 87db2e598e7a2454b9a1722ce6ee9e24,
     type: 3}
   m_PrefabInstance: {fileID: 4926141271965562527}
   m_PrefabAsset: {fileID: 0}
---- !u!4 &6240119450795521083 stripped
+--- !u!4 &4888536579864826228 stripped
 Transform:
-  m_CorrespondingSourceObject: {fileID: 1352329994818929316, guid: 87db2e598e7a2454b9a1722ce6ee9e24,
+  m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 87db2e598e7a2454b9a1722ce6ee9e24,
     type: 3}
   m_PrefabInstance: {fileID: 4926141271965562527}
   m_PrefabAsset: {fileID: 0}

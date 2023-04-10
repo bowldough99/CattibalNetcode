@@ -312,6 +312,7 @@ public class PlayerNetwork : NetworkBehaviour
         {
             //clientDamaged.hp.Value -= healthDamaged;
             clientDamaged.NotifyDamageClientRpc(-healthDamaged, (int)OwnerClientId);
+            clientDamaged.DamageClient(-healthDamaged, (int)OwnerClientId);
         }
         else
         {
@@ -329,10 +330,64 @@ public class PlayerNetwork : NetworkBehaviour
         Debug.Log("health changing");
     }
 
+    public void DamageClient(int damage, int source)
+    {
+        if(NetworkManager.Singleton.IsServer)
+        {
+            NotifyDamageClientRpc(damage, source);
+
+            hp.Value += damage;
+            if (hp.Value > 100)
+            {
+                hp.Value = 100;
+            }
+
+            if (hp.Value <= 0)
+            {
+                hp.Value = 0;
+
+                if (source < 0)
+                {
+                    //UIKillMessages.instance.AddStarveMessage(OwnerClientId.ToString());
+                    NotifyStarveClientRpc(OwnerClientId.ToString());
+                }
+                else
+                {
+                    //UIKillMessages.instance.AddKillMessage(id.ToString(), OwnerClientId.ToString());
+                    NotifyKillClientRpc(source.ToString(), OwnerClientId.ToString());
+                }
+            }
+        }
+    }
+
     [ClientRpc]
     public void NotifyDamageClientRpc(int damage, int source)
     {
-        HealthSourceServerRpc(damage, source);
+        //HealthSourceServerRpc(damage, source);
+
+        hp.Value += damage;
+        if (hp.Value > 100)
+        {
+            hp.Value = 100;
+        }
+
+        if (hp.Value <= 0)
+        {
+            hp.Value = 0;
+            if(IsOwner)
+            {
+                //if (source < 0)
+                //{
+                //    //UIKillMessages.instance.AddStarveMessage(OwnerClientId.ToString());
+                //    NotifyStarveClientRpc(OwnerClientId.ToString());
+                //}
+                //else
+                //{
+                //    //UIKillMessages.instance.AddKillMessage(id.ToString(), OwnerClientId.ToString());
+                //    NotifyKillClientRpc(source.ToString(), OwnerClientId.ToString());
+                //}
+            }
+        }
     }
 
     [ClientRpc]
