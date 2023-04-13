@@ -3,8 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-using CodeMonkey.Utils;
-using CodeMonkey;
 using UnityEngine.TextCore.Text;
 
 //this is a visual script

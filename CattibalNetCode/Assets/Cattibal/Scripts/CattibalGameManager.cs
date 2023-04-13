@@ -27,6 +27,7 @@ public class CattibalGameManager : NetworkBehaviour
     public TMP_Text gameTimerText;
     public TMP_Text gameOverText;
     public TMP_Text livesText;
+    public TMP_Text itemSpawnedText;
 
     private bool ClientGameOver;
     private bool ClientGameStarted;
@@ -103,10 +104,12 @@ public class CattibalGameManager : NetworkBehaviour
                     state = State.GameOver;
                     //but what if a player joined on his own?
                 }
-                if (itemSpawnerTimer <= 0f && canSpawnItem == true)
-                {
+                if (NetworkManager.Singleton.IsServer && itemSpawnerTimer <= 0f && canSpawnItem == true)
+                { 
                     itemManager.SpawnItems();
                     canSpawnItem = false;
+                    itemSpawnedText.gameObject.SetActive(true);
+                    StartCoroutine(DecayMessage(itemSpawnedText.gameObject, 3));
                 }
                 break;
             case State.GameOver:
@@ -163,5 +166,17 @@ public class CattibalGameManager : NetworkBehaviour
         float seconds = Mathf.FloorToInt(currentTime % 60);
 
         gameTimerText.text = String.Format("{0:00} : {1:00}", minutes, seconds);
+    }
+
+    IEnumerator DecayMessage(GameObject obj, float delay)
+    {
+        yield return new WaitForSeconds(delay);
+        TextMeshProUGUI text = obj.GetComponent<TextMeshProUGUI>();
+        while (text.color.a > 0)
+        {
+            text.color -= new Color(0, 0, 0, 1) * Time.deltaTime;
+            yield return null;
+        }
+        Destroy(obj);
     }
 }

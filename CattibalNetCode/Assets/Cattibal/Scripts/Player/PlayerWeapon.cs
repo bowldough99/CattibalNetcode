@@ -1,4 +1,3 @@
-using CodeMonkey;
 using System.Collections;
 using System.Collections.Generic;
 using Unity.Netcode;
@@ -44,9 +43,9 @@ public class PlayerWeapon : NetworkBehaviour
         }
         if (Input.GetKeyDown(KeyCode.E))
         {
-            if (itemHeld == "None")
+            /*if (itemHeld == "None")
             {
-                float pickUpDistance = 8f;
+                float pickUpDistance = 100f;
                 if (Physics.Raycast(playerTransform.position, playerTransform.forward, out RaycastHit raycastHit, pickUpDistance, pickUpLayerMask))
                 {
                     Debug.Log(raycastHit.transform);
@@ -58,48 +57,47 @@ public class PlayerWeapon : NetworkBehaviour
                             raycastHit.transform.gameObject.GetComponent<NetworkObject>().Despawn();
                             itemHeld = "Catnip";
                             weaponUI.itemNumber = 1;
-                            //Debug.Log("i collected" + itemHeld);
+                            Debug.Log("i collected" + itemHeld);
                         }
                         else if (raycastHit.transform.gameObject.tag == "CannedFood")
                         {
                             raycastHit.transform.gameObject.GetComponent<NetworkObject>().Despawn();
                             itemHeld = "CannedFood";
                             weaponUI.itemNumber = 2;
-                            //Debug.Log("i collected a" + itemHeld);
+                            Debug.Log("i collected a" + itemHeld);
                         }
                         else if (raycastHit.transform.gameObject.tag == "Yarnball")
                         {
                             raycastHit.transform.gameObject.GetComponent<NetworkObject>().Despawn();
                             itemHeld = "Yarnball";
                             weaponUI.itemNumber = 3;
-                            //Debug.Log("i collected a" + itemHeld);
+                            Debug.Log("i collected a" + itemHeld);
                         }
                         else if (raycastHit.transform.gameObject.tag == "Box")
                         {
                             raycastHit.transform.gameObject.GetComponent<NetworkObject>().Despawn();
                             itemHeld = "Box";
                             weaponUI.itemNumber = 4;
-                            //Debug.Log("i collected a" + itemHeld);
+                            Debug.Log("i collected a" + itemHeld);
                         }
                         else if (raycastHit.transform.gameObject.tag == "FishBone")
                         {
                             raycastHit.transform.gameObject.GetComponent<NetworkObject>().Despawn();
                             itemHeld = "FishBone";
                             weaponUI.itemNumber = 5;
-                            //Debug.Log("i collected a" + itemHeld);
+                            Debug.Log("i collected a" + itemHeld);
                         }
                         else if (raycastHit.transform.gameObject.tag == "Milk")
                         {
                             raycastHit.transform.gameObject.GetComponent<NetworkObject>().Despawn();
                             itemHeld = "Milk";
                             weaponUI.itemNumber = 6;
-                            //Debug.Log("i collected a" + itemHeld);
+                            Debug.Log("i collected a" + itemHeld);
                         }
 
                     }
-                }
+                }*/
             }
-        }
         if (Input.GetKeyDown(KeyCode.X))
         {
             if (itemHeld == "None")
@@ -139,9 +137,67 @@ public class PlayerWeapon : NetworkBehaviour
 
         }
     }
+    private void OnTriggerStay(Collider other)
+    {
+        if (other.gameObject.layer == 10)
+        {
+            Debug.Log(other.gameObject.tag);
+            if (Input.GetKeyDown(KeyCode.E))
+            {
+                Debug.Log(itemHeld);
+                if (itemHeld == "None")
+                {
+                    if (other.gameObject.tag == "Catnip")
+                    {
+                        other.transform.gameObject.GetComponent<NetworkObject>().Despawn();
+                        itemHeld = "Catnip";
+                        weaponUI.itemNumber = 1;
+                        Debug.Log("i collected" + itemHeld);
+                    }
+                    else if (other.gameObject.tag == "CannedFood")
+                    {
+                        other.gameObject.GetComponent<NetworkObject>().Despawn();
+                        itemHeld = "CannedFood";
+                        weaponUI.itemNumber = 2;
+                        Debug.Log("i collected a" + itemHeld);
+                    }
+                    else if (other.gameObject.tag == "Yarnball")
+                    {
+                        other.gameObject.GetComponent<NetworkObject>().Despawn();
+                        itemHeld = "Yarnball";
+                        weaponUI.itemNumber = 3;
+                        Debug.Log("i collected a" + itemHeld);
+                    }
+                    else if (other.gameObject.tag == "Box")
+                    {
+                        other.gameObject.GetComponent<NetworkObject>().Despawn();
+                        itemHeld = "Box";
+                        weaponUI.itemNumber = 4;
+                        Debug.Log("i collected a" + itemHeld);
+                    }
+                    else if (other.gameObject.tag == "FishBone")
+                    {
+                        other.gameObject.GetComponent<NetworkObject>().Despawn();
+                        itemHeld = "FishBone";
+                        weaponUI.itemNumber = 5;
+                        Debug.Log("i collected a" + itemHeld);
+                    }
+                    else if (other.gameObject.tag == "Milk")
+                    {
+                        other.gameObject.GetComponent<NetworkObject>().Despawn();
+                        itemHeld = "Milk";
+                        weaponUI.itemNumber = 6;
+                        Debug.Log("i collected a" + itemHeld);
+                    }
+                }
+            }
+        }
+    }
 
     public void UpdatePlayerWeapon(Weapon weapon)
     {
 
     }
+
 }
+
