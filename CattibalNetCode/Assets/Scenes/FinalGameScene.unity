@@ -1163,6 +1163,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   healthBarImage: {fileID: 0}
   healthDamageBarImage: {fileID: 0}
+  damagedOverlay: {fileID: 0}
+  healededOverlay: {fileID: 0}
 --- !u!1001 &727332908
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1720,6 +1722,7 @@ MonoBehaviour:
   gameTimerText: {fileID: 0}
   gameOverText: {fileID: 0}
   livesText: {fileID: 0}
+  itemSpawnedText: {fileID: 0}
   itemManager: {fileID: 0}
 --- !u!4 &942964298
 Transform:

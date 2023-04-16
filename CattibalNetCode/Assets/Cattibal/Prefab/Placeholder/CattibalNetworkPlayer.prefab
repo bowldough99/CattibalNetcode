@@ -36,8 +36,8 @@ Transform:
   m_GameObject: {fileID: 2559466361327619827}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
+  m_LocalScale: {x: 1.3, y: 1.3, z: 1.3}
+  m_ConstrainProportionsScale: 1
   m_Children:
   - {fileID: 8197921944502423707}
   - {fileID: 2030950731495746828}
@@ -125,7 +125,7 @@ MonoBehaviour:
   GroundedRadius: 1
   GroundLayers:
     serializedVersion: 2
-    m_Bits: 513
+    m_Bits: 8705
   CinemachineCameraTarget: {fileID: 7886671757171193768}
   TopClamp: 70
   BottomClamp: -30
@@ -369,6 +369,8 @@ MonoBehaviour:
     m_Bits: 1024
   playerNetwork: {fileID: 8317882676193343353}
   weaponUI: {fileID: 0}
+  messagePrefab: {fileID: 5833429967346266689, guid: 0d914df1979589d4182e58bb305c185a,
+    type: 3}
   itemHeld: None
 --- !u!1 &3137603478066432715
 GameObject:
@@ -495,9 +497,9 @@ CapsuleCollider:
   m_GameObject: {fileID: 6988715583431809717}
   m_Material: {fileID: 0}
   m_IsTrigger: 0
-  m_Enabled: 0
+  m_Enabled: 1
   m_Radius: 0.5
-  m_Height: 2
+  m_Height: 1.8
   m_Direction: 1
   m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &7886671757171193768

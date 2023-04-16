@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -13,6 +14,8 @@ public class GameUI : MonoBehaviour
     [SerializeField] private Transform healthBar;
     [SerializeField] private Transform hungerBar;
 
+    public GameObject pickUpMessagePrefab;
+    private GameObject tempObj;
 
     private void Awake()
     {
@@ -27,6 +30,37 @@ public class GameUI : MonoBehaviour
         Hide();
     }
 
+
+    public void AddCanPickUpMessage(string message)
+    {
+        QueueMessage(message);
+    }
+    public void QueueMessage(string message)
+    {
+        if(tempObj == null)
+        {
+            tempObj = Instantiate(pickUpMessagePrefab);
+            tempObj.GetComponent<TextMeshProUGUI>().text = message;
+
+            tempObj.transform.SetParent(transform);
+
+            tempObj.transform.localPosition = Vector3.zero;
+            StartCoroutine(DecayMessage(tempObj, 0.5f));
+
+        }
+    }
+
+    IEnumerator DecayMessage(GameObject obj, float delay)
+    {
+        yield return new WaitForSeconds(delay);
+        TextMeshProUGUI text = obj.GetComponent<TextMeshProUGUI>();
+        while (text.color.a > 0)
+        {
+            text.color -= new Color(0, 0, 0, 1) * Time.deltaTime;
+            yield return null;
+        }
+        Destroy(obj);
+    }
     private void GameManager_OnGameStarted(object sender, System.EventArgs e)
     {
         Show();

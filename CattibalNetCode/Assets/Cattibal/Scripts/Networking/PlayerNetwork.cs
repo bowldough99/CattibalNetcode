@@ -201,10 +201,6 @@ public class PlayerNetwork : NetworkBehaviour
 
     }
 
-    private void FixedUpdate()
-    {
-    }
-
     private void CheckPunch(Transform hand)
     {
         Debug.Log("DETROIT SSSSMAAAASSHH");
@@ -253,6 +249,7 @@ public class PlayerNetwork : NetworkBehaviour
                 NotifyKillClientRpc(id.ToString(), OwnerClientId.ToString());
             }
         }
+        healthBar.DamagedOverlay();
     }
 
     [ClientRpc]
@@ -283,6 +280,15 @@ public class PlayerNetwork : NetworkBehaviour
         {
             Debug.Log("player is dead");
         }
+        if (healthChange > 0)
+        {
+            healthBar.HealedOverlay();
+        }
+        else if (healthChange < 0)
+        {
+            healthBar.DamagedOverlay();
+        }
+
         //Everything that is put here will only run in the server/host but not in client 
         //Debug.Log("TestServerRPC" + OwnerClientId + ";" + message);
         //Debug.Log("TestServerRPC" + OwnerClientId + ";" + serverRpcParams.Receive.SenderClientId);
@@ -310,9 +316,10 @@ public class PlayerNetwork : NetworkBehaviour
         var clientDamaged = NetworkManager.Singleton.ConnectedClients[clientId].PlayerObject.GetComponent<PlayerNetwork>();
         if (clientDamaged != null && clientDamaged.hp.Value > 0 && clientDamaged.hp.Value <= 100)
         {
-            //clientDamaged.hp.Value -= healthDamaged;
+            clientDamaged.hp.Value -= healthDamaged;
             clientDamaged.NotifyDamageClientRpc(-healthDamaged, (int)OwnerClientId);
             clientDamaged.DamageClient(-healthDamaged, (int)OwnerClientId);
+            clientDamaged.healthBar.DamagedOverlay(); //QQ is this supposed to be where the client who got hit get the damaged overlay??
         }
         else
         {
@@ -328,6 +335,8 @@ public class PlayerNetwork : NetworkBehaviour
         });
 
         Debug.Log("health changing");
+        healthBar.HealedOverlay(); //QQ i think this one is correctly showing? but the one on top shouldnt be showing on the person who attack.
+
     }
 
     public void DamageClient(int damage, int source)

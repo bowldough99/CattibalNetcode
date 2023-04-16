@@ -15,13 +15,14 @@ public class HealthBar : MonoBehaviour
     [SerializeField] private Image healthDamageBarImage;
     private float healthDamageShrinkTimer;
 
+    [SerializeField] private Image damagedOverlay;
+    [SerializeField] private Image healededOverlay;
+    private float duration = 0.8f;
+    private float fadeSpeed = 1.5f;
+    private float durationTimer;
     private HealthSystemArgs healthSystemArgument;
 
     private void Awake()
-    {
-    }
-
-    public void Setup(ulong ID)
     {
     }
 
@@ -29,6 +30,8 @@ public class HealthBar : MonoBehaviour
     {
         //Debug.Log("visually, health is " + healthSystem.healthAmount);
         healthDamageBarImage.fillAmount = healthBarImage.fillAmount;
+        damagedOverlay.color = new Color(damagedOverlay.color.r, damagedOverlay.color.g, damagedOverlay.color.b, 0);
+
     }
     private void Update()
     {
@@ -45,6 +48,27 @@ public class HealthBar : MonoBehaviour
         if (healthDamageBarImage.fillAmount < healthBarImage.fillAmount)
         {
             healthDamageBarImage.fillAmount = healthBarImage.fillAmount;
+        }
+
+        if(damagedOverlay.color.a > 0)
+        {
+            durationTimer += Time.deltaTime;
+            if(durationTimer > duration)
+            {
+                float tempAlpha = damagedOverlay.color.a;
+                tempAlpha = Time.deltaTime * fadeSpeed;
+                damagedOverlay.color = new Color(damagedOverlay.color.r, damagedOverlay.color.g, damagedOverlay.color.b, tempAlpha);
+            }
+        }
+        if (healededOverlay.color.a > 0)
+        {
+            durationTimer += Time.deltaTime;
+            if (durationTimer > duration)
+            {
+                float tempAlpha1 = healededOverlay.color.a;
+                tempAlpha1 = Time.deltaTime * fadeSpeed;
+                healededOverlay.color = new Color(healededOverlay.color.r, damagedOverlay.color.g, damagedOverlay.color.b, tempAlpha1);
+            }
         }
     }
 
@@ -67,5 +91,17 @@ public class HealthBar : MonoBehaviour
     public void updateHP(float healthNormalized)
     {
         healthBarImage.fillAmount = healthNormalized;
+    }
+
+    public void DamagedOverlay()
+    {
+        durationTimer = 0;
+        damagedOverlay.color = new Color(damagedOverlay.color.r, damagedOverlay.color.g, damagedOverlay.color.b, 1);
+    }
+
+    public void HealedOverlay()
+    {
+        durationTimer = 0;
+        healededOverlay.color = new Color(healededOverlay.color.r, healededOverlay.color.g, healededOverlay.color.b, 1);
     }
 }

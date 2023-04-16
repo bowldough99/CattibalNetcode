@@ -4,10 +4,5 @@ using UnityEngine;
 
 public class WeaponScript : MonoBehaviour
 {
-    public void Grab()
-    {
-
-
-    }
 
 }

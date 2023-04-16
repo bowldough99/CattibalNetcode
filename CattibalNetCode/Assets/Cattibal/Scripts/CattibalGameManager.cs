@@ -108,8 +108,7 @@ public class CattibalGameManager : NetworkBehaviour
                 { 
                     itemManager.SpawnItems();
                     canSpawnItem = false;
-                    itemSpawnedText.gameObject.SetActive(true);
-                    StartCoroutine(DecayMessage(itemSpawnedText.gameObject, 3));
+                    NotifyItemSpawnClientRpc();
                 }
                 break;
             case State.GameOver:
@@ -166,6 +165,13 @@ public class CattibalGameManager : NetworkBehaviour
         float seconds = Mathf.FloorToInt(currentTime % 60);
 
         gameTimerText.text = String.Format("{0:00} : {1:00}", minutes, seconds);
+    }
+
+    [ClientRpc]
+    public void NotifyItemSpawnClientRpc()
+    {
+        itemSpawnedText.gameObject.SetActive(true);
+        StartCoroutine(DecayMessage(itemSpawnedText.gameObject, 3));
     }
 
     IEnumerator DecayMessage(GameObject obj, float delay)
