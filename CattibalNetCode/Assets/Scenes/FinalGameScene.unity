@@ -3403,6 +3403,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   healthBar: {fileID: 0}
   hungerBar: {fileID: 0}
+  pickUpMessagePrefab: {fileID: 0}
 --- !u!1001 &2040361994
 PrefabInstance:
   m_ObjectHideFlags: 0
