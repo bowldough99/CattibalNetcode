@@ -317,7 +317,7 @@ public class PlayerNetwork : NetworkBehaviour
         if (clientDamaged != null && clientDamaged.hp.Value > 0 && clientDamaged.hp.Value <= 100)
         {
             clientDamaged.hp.Value -= healthDamaged;
-            clientDamaged.NotifyDamageClientRpc(-healthDamaged, (int)OwnerClientId);
+            //clientDamaged.NotifyDamageClientRpc(-healthDamaged, (int)OwnerClientId);
             clientDamaged.DamageClient(-healthDamaged, (int)OwnerClientId);
             clientDamaged.healthBar.DamagedOverlay(); //QQ is this supposed to be where the client who got hit get the damaged overlay??
         }
