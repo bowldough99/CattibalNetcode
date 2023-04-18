@@ -9,6 +9,7 @@ using Unity.Netcode.Components;
 using UnityEngine.XR;
 using StarterAssets;
 using TMPro;
+using DissolveExample;
 
 [RequireComponent(typeof(NetworkTransform))]
 public class PlayerNetwork : NetworkBehaviour
@@ -49,7 +50,7 @@ public class PlayerNetwork : NetworkBehaviour
 
     private PlayerMovement playerMovement;
     private CattibalGameManager gameManager;
-
+    [SerializeField] private DissolveChilds dissolve;
 
     private NetworkVariable<MyCustomData> playerData = new NetworkVariable<MyCustomData>(
         new MyCustomData {
@@ -115,6 +116,7 @@ public class PlayerNetwork : NetworkBehaviour
         {
             GameObject.FindObjectOfType<TutorialUI>(true).player = this;
         }
+
     }
 
     public override void OnNetworkDespawn()
@@ -143,6 +145,8 @@ public class PlayerNetwork : NetworkBehaviour
         if (Input.GetKeyDown(KeyCode.T))
         {
             HealthServerRPC("ATTACK!", -10);
+            var value = Mathf.SmoothStep(0f, 1f, Time.time * .5f);
+            dissolve.SetValue(value);
             //TestServerRPC(new ServerRpcParams()); //But the client can still press T which shows the Debug in the server logs
             //TestClientRPC(new ClientRpcParams { Send = new ClientRpcSendParams {TargetClientIds = new List<ulong> { 1 } } }); //But the client can still press T which shows the Debug in the server logs
             //spawnedObjectTransform = Instantiate(spawnedObjectPrefab);
@@ -276,9 +280,11 @@ public class PlayerNetwork : NetworkBehaviour
             hp.Value = 100;
         }
 
-        if (hp.Value <= 0)
+        if (hp.Value <= 0 && IsOwner)
         {
+            hp.Value = 0;
             Debug.Log("player is dead");
+
         }
         if (healthChange > 0)
         {

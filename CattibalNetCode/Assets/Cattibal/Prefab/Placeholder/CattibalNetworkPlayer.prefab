@@ -20,6 +20,7 @@ GameObject:
   - component: {fileID: 8317882676193343353}
   - component: {fileID: 8953366851673364985}
   - component: {fileID: -4815646621932345465}
+  - component: {fileID: -5639996071389503209}
   m_Layer: 8
   m_Name: CattibalNetworkPlayer
   m_TagString: Player
@@ -337,6 +338,7 @@ MonoBehaviour:
   - {fileID: 2100000, guid: 271eb5fb069c2f44ca55f4bae60a343e, type: 2}
   skinMaterialToUse: {fileID: 2100000, guid: 0a5d8ebe39607ec4499ea136b473988f, type: 2}
   spawnedPlayerPrefab: {fileID: 9091180949123740270}
+  dissolve: {fileID: -5639996071389503209}
 --- !u!114 &8953366851673364985
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -369,9 +371,20 @@ MonoBehaviour:
     m_Bits: 1024
   playerNetwork: {fileID: 8317882676193343353}
   weaponUI: {fileID: 0}
-  messagePrefab: {fileID: 5833429967346266689, guid: 0d914df1979589d4182e58bb305c185a,
-    type: 3}
   itemHeld: None
+--- !u!114 &-5639996071389503209
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2559466361327619827}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d920476fea175f34dac90092aef48a8b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  materials: []
 --- !u!1 &3137603478066432715
 GameObject:
   m_ObjectHideFlags: 0
@@ -414,7 +427,6 @@ GameObject:
   m_Component:
   - component: {fileID: 2030950731495746828}
   - component: {fileID: 890253792705091351}
-  - component: {fileID: 8502426314882358225}
   - component: {fileID: 6482879626983013802}
   m_Layer: 8
   m_Name: Collision
@@ -446,48 +458,6 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6988715583431809717}
   m_Mesh: {fileID: 10208, guid: 0000000000000000e000000000000000, type: 0}
---- !u!23 &8502426314882358225
-MeshRenderer:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6988715583431809717}
-  m_Enabled: 0
-  m_CastShadows: 1
-  m_ReceiveShadows: 1
-  m_DynamicOccludee: 1
-  m_StaticShadowCaster: 0
-  m_MotionVectors: 1
-  m_LightProbeUsage: 1
-  m_ReflectionProbeUsage: 1
-  m_RayTracingMode: 2
-  m_RayTraceProcedural: 0
-  m_RenderingLayerMask: 1
-  m_RendererPriority: 0
-  m_Materials:
-  - {fileID: 2100000, guid: 31321ba15b8f8eb4c954353edc038b1d, type: 2}
-  m_StaticBatchInfo:
-    firstSubMesh: 0
-    subMeshCount: 0
-  m_StaticBatchRoot: {fileID: 0}
-  m_ProbeAnchor: {fileID: 0}
-  m_LightProbeVolumeOverride: {fileID: 0}
-  m_ScaleInLightmap: 1
-  m_ReceiveGI: 1
-  m_PreserveUVs: 0
-  m_IgnoreNormalsForChartDetection: 0
-  m_ImportantGI: 0
-  m_StitchLightmapSeams: 1
-  m_SelectedEditorRenderState: 3
-  m_MinimumChartSize: 4
-  m_AutoUVMaxDistance: 0.5
-  m_AutoUVMaxAngle: 89
-  m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
-  m_SortingOrder: 0
-  m_AdditionalVertexStreams: {fileID: 0}
 --- !u!136 &6482879626983013802
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -4008,9 +3978,19 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5232612924502506581, guid: 87db2e598e7a2454b9a1722ce6ee9e24,
         type: 3}
+      propertyPath: m_Materials.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5232612924502506581, guid: 87db2e598e7a2454b9a1722ce6ee9e24,
+        type: 3}
       propertyPath: m_Materials.Array.data[0]
       value: 
       objectReference: {fileID: 2100000, guid: 271eb5fb069c2f44ca55f4bae60a343e, type: 2}
+    - target: {fileID: 5232612924502506581, guid: 87db2e598e7a2454b9a1722ce6ee9e24,
+        type: 3}
+      propertyPath: m_Materials.Array.data[1]
+      value: 
+      objectReference: {fileID: 2100000, guid: 1a50a9ace93fd614db63694d201e262b, type: 2}
     - target: {fileID: 5312589180387735298, guid: 87db2e598e7a2454b9a1722ce6ee9e24,
         type: 3}
       propertyPath: m_Layer
