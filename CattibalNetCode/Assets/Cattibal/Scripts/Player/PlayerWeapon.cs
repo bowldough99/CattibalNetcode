@@ -190,7 +190,8 @@ public class PlayerWeapon : NetworkBehaviour
     public void ApplyWeapon(int weaponNumber, string weaponName, ulong clientId)
     {
         itemHeld = weaponName;
-        weaponUI.itemNumber = weaponNumber;
+        if(IsOwner)
+            weaponUI.itemNumber = weaponNumber;
         return;
         var clientCollected = NetworkManager.Singleton.ConnectedClients[clientId].PlayerObject.GetComponent<PlayerWeapon>();
         if (clientCollected != null)
