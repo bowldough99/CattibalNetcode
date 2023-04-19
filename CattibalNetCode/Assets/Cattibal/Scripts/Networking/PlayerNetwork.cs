@@ -51,6 +51,9 @@ public class PlayerNetwork : NetworkBehaviour
     private PlayerMovement playerMovement;
     private CattibalGameManager gameManager;
     [SerializeField] private DissolveChilds dissolve;
+    float tParam = 0;
+    float valToBeLerped = 0;
+    float speed = 0.5f;
 
     private NetworkVariable<MyCustomData> playerData = new NetworkVariable<MyCustomData>(
         new MyCustomData {
@@ -145,8 +148,6 @@ public class PlayerNetwork : NetworkBehaviour
         if (Input.GetKeyDown(KeyCode.T))
         {
             HealthServerRPC("ATTACK!", -10);
-            var value = Mathf.SmoothStep(0f, 1f, Time.time * .5f);
-            dissolve.SetValue(value);
             //TestServerRPC(new ServerRpcParams()); //But the client can still press T which shows the Debug in the server logs
             //TestClientRPC(new ClientRpcParams { Send = new ClientRpcSendParams {TargetClientIds = new List<ulong> { 1 } } }); //But the client can still press T which shows the Debug in the server logs
             //spawnedObjectTransform = Instantiate(spawnedObjectPrefab);
@@ -202,7 +203,10 @@ public class PlayerNetwork : NetworkBehaviour
                 CheckPunch(playerHand.transform);
             }
         }
-
+        if (!_isAlive)
+        {
+            DissolveClientRpc();
+        }
     }
 
     private void CheckPunch(Transform hand)
@@ -242,6 +246,7 @@ public class PlayerNetwork : NetworkBehaviour
         if (hp.Value <= 0)
         {
             hp.Value = 0;
+
             if (id < 0)
             {
                 //UIKillMessages.instance.AddStarveMessage(OwnerClientId.ToString());
@@ -284,6 +289,7 @@ public class PlayerNetwork : NetworkBehaviour
         {
             hp.Value = 0;
             Debug.Log("player is dead");
+            _isAlive = false;
 
         }
         if (healthChange > 0)
@@ -326,6 +332,10 @@ public class PlayerNetwork : NetworkBehaviour
             //clientDamaged.NotifyDamageClientRpc(-healthDamaged, (int)OwnerClientId);
             clientDamaged.DamageClient(-healthDamaged, (int)OwnerClientId);
             clientDamaged.healthBar.DamagedOverlay(); //QQ is this supposed to be where the client who got hit get the damaged overlay??
+            if (clientDamaged.hp.Value <= 0)
+            {
+                clientDamaged._isAlive = false; //QQ if i want to let the game know this particular client died, is it here? coz this seems to be causing the problem in line 360
+            }
         }
         else
         {
@@ -344,6 +354,17 @@ public class PlayerNetwork : NetworkBehaviour
         healthBar.HealedOverlay(); //QQ i think this one is correctly showing? but the one on top shouldnt be showing on the person who attack.
 
     }
+    [ClientRpc]
+    public void DissolveClientRpc()
+    {
+        //QQ idgi, why is this only happening if its the client killing a host?? but when host kill client, the client dont dissolve
+        dissolve.SetValue(tParam);
+        if (tParam < 1)
+        {
+            tParam += Time.deltaTime * speed;
+            valToBeLerped = Mathf.Lerp(0, 1, tParam);
+        }
+    }
 
     public void DamageClient(int damage, int source)
     {
@@ -360,7 +381,6 @@ public class PlayerNetwork : NetworkBehaviour
             if (hp.Value <= 0)
             {
                 hp.Value = 0;
-
                 if (source < 0)
                 {
                     //UIKillMessages.instance.AddStarveMessage(OwnerClientId.ToString());
@@ -391,16 +411,6 @@ public class PlayerNetwork : NetworkBehaviour
             hp.Value = 0;
             if(IsOwner)
             {
-                //if (source < 0)
-                //{
-                //    //UIKillMessages.instance.AddStarveMessage(OwnerClientId.ToString());
-                //    NotifyStarveClientRpc(OwnerClientId.ToString());
-                //}
-                //else
-                //{
-                //    //UIKillMessages.instance.AddKillMessage(id.ToString(), OwnerClientId.ToString());
-                //    NotifyKillClientRpc(source.ToString(), OwnerClientId.ToString());
-                //}
             }
         }
     }

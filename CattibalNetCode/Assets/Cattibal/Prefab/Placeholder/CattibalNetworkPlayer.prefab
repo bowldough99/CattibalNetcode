@@ -332,11 +332,11 @@ MonoBehaviour:
   minimumAttackDistance: 100
   endGameText: {fileID: 0}
   catSkins:
-  - {fileID: 2100000, guid: 5be5b959e6806fa45ba08b88bee8f9ff, type: 2}
-  - {fileID: 2100000, guid: 0a5d8ebe39607ec4499ea136b473988f, type: 2}
-  - {fileID: 2100000, guid: d9de51045d5be8849b0ecab901049800, type: 2}
-  - {fileID: 2100000, guid: 271eb5fb069c2f44ca55f4bae60a343e, type: 2}
-  skinMaterialToUse: {fileID: 2100000, guid: 0a5d8ebe39607ec4499ea136b473988f, type: 2}
+  - {fileID: 2100000, guid: 5020e48f35d2bf34287734c7a91936eb, type: 2}
+  - {fileID: 2100000, guid: 6177b958c391e19429634acfcf2e342f, type: 2}
+  - {fileID: 2100000, guid: 9f958ec8d6de45e488e7230087011ad1, type: 2}
+  - {fileID: 2100000, guid: e89cc7aefda3db543808a88407154f77, type: 2}
+  skinMaterialToUse: {fileID: 2100000, guid: 6177b958c391e19429634acfcf2e342f, type: 2}
   spawnedPlayerPrefab: {fileID: 9091180949123740270}
   dissolve: {fileID: -5639996071389503209}
 --- !u!114 &8953366851673364985

@@ -9,6 +9,7 @@ namespace DissolveExample
         // Start is called before the first frame update
         [SerializeField] private List<Material> materials = new List<Material>();
         bool PingPong = false;
+
         void Start()
         {
             var renders = GetComponentsInChildren<Renderer>();
@@ -51,5 +52,7 @@ namespace DissolveExample
             }
             Debug.Log("dissolve start");
         }
+
+
     }
 }
