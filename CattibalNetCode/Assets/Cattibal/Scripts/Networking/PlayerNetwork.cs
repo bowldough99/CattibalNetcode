@@ -331,7 +331,14 @@ public class PlayerNetwork : NetworkBehaviour
             clientDamaged.hp.Value -= healthDamaged;
             //clientDamaged.NotifyDamageClientRpc(-healthDamaged, (int)OwnerClientId);
             clientDamaged.DamageClient(-healthDamaged, (int)OwnerClientId);
-            clientDamaged.healthBar.DamagedOverlay(); //QQ is this supposed to be where the client who got hit get the damaged overlay??
+            if(clientDamaged.IsOwner)
+            {
+                clientDamaged.healthBar.DamagedOverlay(); //QQ is this supposed to be where the client who got hit get the damaged overlay??
+            }
+            else
+            {
+                clientDamaged.DamagedOverlayClientRpc();
+            }
             if (clientDamaged.hp.Value <= 0)
             {
                 clientDamaged._isAlive = false; //QQ if i want to let the game know this particular client died, is it here? coz this seems to be causing the problem in line 360
@@ -354,6 +361,16 @@ public class PlayerNetwork : NetworkBehaviour
         healthBar.HealedOverlay(); //QQ i think this one is correctly showing? but the one on top shouldnt be showing on the person who attack.
 
     }
+
+    [ClientRpc]
+    public void DamagedOverlayClientRpc()
+    {
+        if(IsOwner)
+        {
+            healthBar.DamagedOverlay();
+        }
+    }
+
     [ClientRpc]
     public void DissolveClientRpc()
     {
@@ -400,15 +417,15 @@ public class PlayerNetwork : NetworkBehaviour
     {
         //HealthSourceServerRpc(damage, source);
 
-        hp.Value += damage;
+        //hp.Value += damage; // no need to set hp for client
         if (hp.Value > 100)
         {
-            hp.Value = 100;
+            //hp.Value = 100;
         }
 
         if (hp.Value <= 0)
         {
-            hp.Value = 0;
+            //hp.Value = 0;
             if(IsOwner)
             {
             }
