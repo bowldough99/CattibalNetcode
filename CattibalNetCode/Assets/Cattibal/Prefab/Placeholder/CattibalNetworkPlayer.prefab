@@ -95,8 +95,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 22c52f79c3d19fc41a44c9ec2d3f273f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  MoveSpeed: 4
-  SprintSpeed: 8.5
+  MoveSpeed: 6
+  SprintSpeed: 12
   RotationSmoothTime: 0.12
   SpeedChangeRate: 10
   LookSensitivity: 1

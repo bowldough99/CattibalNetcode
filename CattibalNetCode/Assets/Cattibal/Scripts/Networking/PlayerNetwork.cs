@@ -142,6 +142,11 @@ public class PlayerNetwork : NetworkBehaviour
 
             moveToSpawn = true;
         }
+
+        if (!_isAlive)
+        {
+            DissolveClientRpc();
+        }
         if (!IsOwner) return; //anything before only works when IsOwner
         if (!CattibalGameManager.Instance.IsGamePlaying()) return;
 
@@ -203,10 +208,7 @@ public class PlayerNetwork : NetworkBehaviour
                 CheckPunch(playerHand.transform);
             }
         }
-        if (!_isAlive)
-        {
-            DissolveClientRpc();
-        }
+
     }
 
     private void CheckPunch(Transform hand)
