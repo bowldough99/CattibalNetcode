@@ -213,6 +213,16 @@ public class PlayerNetwork : NetworkBehaviour
 
     private void CheckPunch(Transform hand)
     {
+        // new attack code
+        PlayerNetwork target = playerMovement.ClawBox.GetHitTarget();
+        if(target != null)
+        {
+            Debug.Log("NEW ATTACK CODE HIIIT");
+            UpdateHealthServerRPC(20, target.OwnerClientId);
+        }
+
+        return;
+
         Debug.Log("DETROIT SSSSMAAAASSHH");
         RaycastHit hit;
 

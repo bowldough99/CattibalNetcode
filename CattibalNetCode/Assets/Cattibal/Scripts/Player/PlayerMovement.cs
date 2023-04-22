@@ -142,6 +142,7 @@ namespace StarterAssets
             }
         }
 
+        public PlayerClaw ClawBox;
 
         private void Awake()
         {
@@ -486,6 +487,7 @@ namespace StarterAssets
                     }
                     CanAttack = false;
                     IsAttacking = true;
+                    ClawBox.enabled = true;
                 }
 
                 // Attack timeout
@@ -494,12 +496,14 @@ namespace StarterAssets
                     //IsAttacking = false;
                     _input.attack = false;
                     _attackTimeoutDelta -= Time.deltaTime;
+                    ClawBox.enabled = false;
                 }
             }
             else
             {
                 CanAttack = true;
                 IsAttacking = false;
+                ClawBox.enabled = false;
                 // update animator if using character
                 if (_hasAnimator)
                 {
