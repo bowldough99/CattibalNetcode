@@ -37,6 +37,8 @@ public class CattibalGameManager : NetworkBehaviour
     private float timeRemaining;
     public NetworkVariable<bool> isGameOver { get; } = new NetworkVariable<bool>(false);
 
+    HashSet<ulong> deadplayers = new HashSet<ulong>();
+
     private enum State
     {
         WaitingToStart,
@@ -53,7 +55,7 @@ public class CattibalGameManager : NetworkBehaviour
     private bool canSpawnItem = true;
 
     public event EventHandler OnGameEnd;
-    [SerializeField]private ItemManager itemManager;
+    [SerializeField] private ItemManager itemManager;
 
     private void Awake()
     {
@@ -74,12 +76,12 @@ public class CattibalGameManager : NetworkBehaviour
         switch (state)
         {
             case State.WaitingToStart:
-                if(numOfPlayers != totalPlayers)
+                if (numOfPlayers != totalPlayers)
                 {
                     break;
                 }
                 waitingToStartTimer -= Time.deltaTime;
-                if(waitingToStartTimer < 0f)
+                if (waitingToStartTimer < 0f)
                 {
                     state = State.CountdownToStart;
                 }
@@ -99,13 +101,13 @@ public class CattibalGameManager : NetworkBehaviour
                 gamePlayingTimer -= Time.deltaTime;
                 UpdateGameTimer(gamePlayingTimer);
                 itemSpawnerTimer -= Time.deltaTime;
-                if (numOfPlayers <= 0)
+                if (numOfPlayers <= 1)
                 {
                     state = State.GameOver;
                     //but what if a player joined on his own?
                 }
                 if (NetworkManager.Singleton.IsServer && itemSpawnerTimer <= 0f && canSpawnItem == true)
-                { 
+                {
                     itemManager.SpawnItems();
                     canSpawnItem = false;
                     NotifyItemSpawnClientRpc();
@@ -184,5 +186,21 @@ public class CattibalGameManager : NetworkBehaviour
             yield return null;
         }
         Destroy(obj);
+    }
+
+    public void KillPlayer(ulong clientid)
+    {
+        if(deadplayers.Contains(clientid))
+        {
+            return;
+        }
+
+        numOfPlayers--;
+        deadplayers.Add(clientid);
+    }
+
+    public bool IsWinner(ulong clientid)
+    {
+        return state == State.GameOver && !deadplayers.Contains(clientid);
     }
 }

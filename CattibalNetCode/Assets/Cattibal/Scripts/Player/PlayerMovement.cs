@@ -202,6 +202,12 @@ namespace StarterAssets
                 return;
             }
 
+            // DED
+            if(!GetComponent<PlayerNetwork>().IsAlive)
+            {
+                return;
+            }
+
             JumpAndGravity();
             GroundedCheck();
             Attack();

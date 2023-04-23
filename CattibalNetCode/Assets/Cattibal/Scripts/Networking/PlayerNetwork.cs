@@ -134,6 +134,10 @@ public class PlayerNetwork : NetworkBehaviour
 
     private void Update()
     {
+        if(hp.Value <= 0)
+        {
+            CattibalGameManager.Instance.KillPlayer(OwnerClientId);
+        }
 
         if (!moveToSpawn)
         {
@@ -148,7 +152,27 @@ public class PlayerNetwork : NetworkBehaviour
             DissolveClientRpc();
         }
         if (!IsOwner) return; //anything before only works when IsOwner
+
+
+        if (CattibalGameManager.Instance.IsWinner(OwnerClientId))
+        {
+            if (!GameOverUI.instance.gameObject.activeSelf)
+            {
+                GameOverUI.instance.gameObject.SetActive(true);
+                GameOverUI.instance.ActivateVictory();
+            }
+        }
+
         if (!CattibalGameManager.Instance.IsGamePlaying()) return;
+
+        if(hp.Value <= 0)
+        {
+            if (!GameOverUI.instance.gameObject.activeSelf)
+            {
+                GameOverUI.instance.gameObject.SetActive(true);
+                GameOverUI.instance.ActivateDefeat();
+            }
+        }
 
         if (Input.GetKeyDown(KeyCode.T))
         {
@@ -199,14 +223,19 @@ public class PlayerNetwork : NetworkBehaviour
         healthBar.updateHP(hp.Value / 100.0f);
         hungerBar.updateHunger(hunger.Value / 100.0f);
 
-        if (IsClient && IsOwner)
+        //if (IsClient && IsOwner)
+        //{
+        //
+        //    if (playerMovement.IsAttacking == true)
+        //    {
+        //        //CheckPunch(transform);
+        //        CheckPunch(playerHand.transform);
+        //    }
+        //}
+        if (playerMovement.IsAttacking == true)
         {
-
-            if (playerMovement.IsAttacking == true)
-            {
-                //CheckPunch(transform);
-                CheckPunch(playerHand.transform);
-            }
+            //CheckPunch(transform);
+            CheckPunch(playerHand.transform);
         }
 
     }
@@ -219,6 +248,7 @@ public class PlayerNetwork : NetworkBehaviour
         {
             Debug.Log("NEW ATTACK CODE HIIIT");
             UpdateHealthServerRPC(20, target.OwnerClientId);
+            //target.HealthSourceServerRpc(-20, (int)OwnerClientId);
         }
 
         return;
@@ -246,7 +276,7 @@ public class PlayerNetwork : NetworkBehaviour
         }
     }
 
-    [ServerRpc]
+    [ServerRpc(RequireOwnership = false)]
     public void HealthSourceServerRpc(int healthChange, int id)
     {
         hp.Value += healthChange;
@@ -257,7 +287,9 @@ public class PlayerNetwork : NetworkBehaviour
 
         if (hp.Value <= 0)
         {
+            _isAlive = false;
             hp.Value = 0;
+            CattibalGameManager.Instance.KillPlayer(OwnerClientId);
 
             if (id < 0)
             {
