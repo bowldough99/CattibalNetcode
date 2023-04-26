@@ -38,6 +38,7 @@ public class LobbyListUI : MonoBehaviour {
         CattibalLobbyManager.Instance.OnLeftLobby += LobbyManager_OnLeftLobby;
         CattibalLobbyManager.Instance.OnKickedFromLobby += LobbyManager_OnKickedFromLobby;
         CattibalLobbyManager.Instance.OnGameStarted += LobbyManager_OnGameStarted;
+        CattibalLobbyManager.Instance.OnLobbyReset += LobbyManager_OnLeftLobby;
         AuthenticateUI.Instance.OnAuthenticated += LobbyManager_OnAuthenticated;
 
         Hide();

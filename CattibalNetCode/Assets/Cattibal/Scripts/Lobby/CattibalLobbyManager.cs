@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.Netcode;
 using Unity.Services.Authentication;
 using Unity.Services.Core;
 using Unity.Services.Lobbies;
@@ -27,6 +28,7 @@ public class CattibalLobbyManager : MonoBehaviour
     public event EventHandler<LobbyEventArgs> OnJoinedLobbyUpdate;
     public event EventHandler<LobbyEventArgs> OnKickedFromLobby;
     public event EventHandler<LobbyEventArgs> OnLobbyGameModeChanged;
+    public event EventHandler<LobbyEventArgs> OnLobbyReset;
     //public event EventHandler<LobbyEventArgs> OnGameStarted;
     public class LobbyEventArgs : EventArgs
     {
@@ -470,5 +472,19 @@ public class CattibalLobbyManager : MonoBehaviour
 
         }
     }
+
+    public void ResetLobby()
+    {
+        if(NetworkManager.Singleton.IsHost)
+        {
+            NetworkManager.Singleton.DisconnectClient(NetworkManager.Singleton.LocalClientId);
+        }
+        else
+        {
+            NetworkManager.Singleton.Shutdown();
+        }
+        OnLobbyReset?.Invoke(this, null);
+    }
+
 
 }

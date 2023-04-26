@@ -90,4 +90,9 @@ public class GameOverUI : MonoBehaviour
         gameoverText.gameObject.SetActive(true);
         buttons.SetActive(true);
     }
+
+    public void LeaveGame()
+    {
+        CattibalLobbyManager.Instance.ResetLobby();
+    }
 }
