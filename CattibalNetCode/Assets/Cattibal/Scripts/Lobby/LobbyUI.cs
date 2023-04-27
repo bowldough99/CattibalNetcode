@@ -72,7 +72,7 @@ public class LobbyUI : MonoBehaviour {
         CattibalLobbyManager.Instance.OnLeftLobby += LobbyManager_OnLeftLobby;
         CattibalLobbyManager.Instance.OnKickedFromLobby += LobbyManager_OnLeftLobby;
         CattibalLobbyManager.Instance.OnGameStarted += LobbyManager_OnGameStarted;
-
+        CattibalLobbyManager.Instance.OnLobbyReset += LobbyManager_ResetLobby;
         Hide();
     }
 
@@ -86,6 +86,12 @@ public class LobbyUI : MonoBehaviour {
     private void LobbyManager_OnLeftLobby(object sender, System.EventArgs e) {
         ClearLobby();
         Hide();
+    }
+    private void LobbyManager_ResetLobby(object send, EventArgs e)
+    {
+        ClearLobby();
+        Hide();
+        lobbyBackground.gameObject.SetActive(true);
     }
     private void SetStartGameButtonVisible(bool visible)
     {

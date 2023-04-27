@@ -25,6 +25,7 @@ public class GameUI : MonoBehaviour
     private void Start()
     {
         CattibalLobbyManager.Instance.OnGameStarted += GameManager_OnGameStarted;
+        CattibalLobbyManager.Instance.OnLobbyReset += GameManager_OnGameEnded;
         CattibalGameManager.Instance.OnGameEnd += GameManager_OnGameEnded;
 
         Hide();

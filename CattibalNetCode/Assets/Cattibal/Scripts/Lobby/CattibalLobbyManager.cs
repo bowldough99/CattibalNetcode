@@ -484,6 +484,7 @@ public class CattibalLobbyManager : MonoBehaviour
             NetworkManager.Singleton.Shutdown();
         }
         OnLobbyReset?.Invoke(this, null);
+        CameraManager.Instance.ShowCanvasView();
     }
 
 
