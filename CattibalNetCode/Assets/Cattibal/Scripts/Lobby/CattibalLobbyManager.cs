@@ -475,14 +475,8 @@ public class CattibalLobbyManager : MonoBehaviour
 
     public void ResetLobby()
     {
-        if(NetworkManager.Singleton.IsHost)
-        {
-            NetworkManager.Singleton.DisconnectClient(NetworkManager.Singleton.LocalClientId);
-        }
-        else
-        {
-            NetworkManager.Singleton.Shutdown();
-        }
+        
+        NetworkManager.Singleton.Shutdown();
         OnLobbyReset?.Invoke(this, null);
         CameraManager.Instance.ShowCanvasView();
     }

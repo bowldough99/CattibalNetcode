@@ -93,6 +93,9 @@ public class GameOverUI : MonoBehaviour
 
     public void LeaveGame()
     {
+        CattibalGameManager.Instance.ResetGameManager();
         CattibalLobbyManager.Instance.ResetLobby();
+        GameObject.FindObjectOfType<TutorialUI>(true).Reset();
+        gameObject.SetActive(false);
     }
 }

@@ -76,6 +76,9 @@ public class CattibalGameManager : NetworkBehaviour
         switch (state)
         {
             case State.WaitingToStart:
+                deadplayers.Clear();
+                countdown.text = "";
+                gameTimerText.text = "";
                 if (numOfPlayers != totalPlayers)
                 {
                     break;
@@ -138,6 +141,7 @@ public class CattibalGameManager : NetworkBehaviour
     }
     public void registerPlayer()
     {
+        Debug.Log("player redy");
         numOfPlayers++;
     }
 
@@ -194,13 +198,31 @@ public class CattibalGameManager : NetworkBehaviour
         {
             return;
         }
-
+        Debug.Log("player ded");
         numOfPlayers--;
+        if (numOfPlayers < 0)
+            numOfPlayers = 0;
         deadplayers.Add(clientid);
     }
 
     public bool IsWinner(ulong clientid)
     {
+        Debug.Log(string.Format("is ded {0}", deadplayers.Contains(clientid)));
         return state == State.GameOver && !deadplayers.Contains(clientid);
+    }
+
+    public void ResetGameManager()
+    {
+        numOfPlayers = 0;
+        totalPlayers = -1;
+        state = State.WaitingToStart;
+        deadplayers = new HashSet<ulong>();
+        isGameOver.Value = false;
+
+
+        waitingToStartTimer = 1f;
+        countdownToStartTimer = 5f;
+        gamePlayingTimer = 200f;
+        itemSpawnerTimer = 5f;
     }
 }

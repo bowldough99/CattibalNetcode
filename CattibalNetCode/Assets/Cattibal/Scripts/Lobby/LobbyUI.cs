@@ -89,6 +89,7 @@ public class LobbyUI : MonoBehaviour {
     }
     private void LobbyManager_ResetLobby(object send, EventArgs e)
     {
+        GameStarted = false;
         ClearLobby();
         Hide();
         lobbyBackground.gameObject.SetActive(true);

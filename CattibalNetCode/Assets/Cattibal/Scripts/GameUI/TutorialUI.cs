@@ -43,6 +43,18 @@ public class TutorialUI : NetworkBehaviour
             CloseTutorial();
     }
 
+    public void Reset()
+    {
+        delayTimer = 0;
+        state = TutorialState.OPEN;
+        gameObject.SetActive(true);
+
+
+        Color fadecolor = fadeImage.color;
+        fadecolor.a = 0;
+        fadeImage.color = fadecolor;
+    }
+
     void OpenTutorial()
     {
         Color fadecolor = fadeImage.color;
