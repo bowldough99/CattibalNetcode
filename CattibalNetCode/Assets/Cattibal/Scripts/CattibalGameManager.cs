@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Unity.Netcode;
 using UnityEngine;
+using UnityEngine.UI;
 using UnityEngine.Assertions;
 using Random = UnityEngine.Random;
 using TMPro;
@@ -28,6 +29,9 @@ public class CattibalGameManager : NetworkBehaviour
     public TMP_Text gameOverText;
     public TMP_Text livesText;
     public TMP_Text itemSpawnedText;
+    public Image itemSpawnedTextBox;
+    public GameObject gameTimer;
+
 
     private bool ClientGameOver;
     private bool ClientGameStarted;
@@ -100,7 +104,7 @@ public class CattibalGameManager : NetworkBehaviour
                 }
                 break;
             case State.GamePlaying:
-                gameTimerText.gameObject.SetActive(true);
+                gameTimer.gameObject.SetActive(true);
                 gamePlayingTimer -= Time.deltaTime;
                 UpdateGameTimer(gamePlayingTimer);
                 itemSpawnerTimer -= Time.deltaTime;
@@ -176,7 +180,8 @@ public class CattibalGameManager : NetworkBehaviour
     [ClientRpc]
     public void NotifyItemSpawnClientRpc()
     {
-        itemSpawnedText.gameObject.SetActive(true);
+        itemSpawnedTextBox.gameObject.SetActive(true);
+        StartCoroutine(DecayImage(itemSpawnedTextBox.gameObject, 3));
         StartCoroutine(DecayMessage(itemSpawnedText.gameObject, 3));
     }
 
@@ -187,6 +192,17 @@ public class CattibalGameManager : NetworkBehaviour
         while (text.color.a > 0)
         {
             text.color -= new Color(0, 0, 0, 1) * Time.deltaTime;
+            yield return null;
+        }
+        Destroy(obj);
+    }
+    IEnumerator DecayImage(GameObject obj, float delay)
+    {
+        yield return new WaitForSeconds(delay);
+        Image image = obj.GetComponent<Image>();
+        while (image.color.a > 0)
+        {
+            image.color -= new Color(0, 0, 0, 1) * Time.deltaTime;
             yield return null;
         }
         Destroy(obj);

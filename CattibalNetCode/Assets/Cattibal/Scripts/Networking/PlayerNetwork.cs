@@ -266,6 +266,7 @@ public class PlayerNetwork : NetworkBehaviour
             {
                 UpdateHealthServerRPC(20, playerHit.OwnerClientId);
                 Debug.Log(playerHit.OwnerClientId);
+                healthBar.HealedOverlay();
             }
             Debug.Log("raycast hitting");
         }
