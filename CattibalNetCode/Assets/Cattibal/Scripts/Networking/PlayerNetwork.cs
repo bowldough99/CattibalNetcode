@@ -404,7 +404,7 @@ public class PlayerNetwork : NetworkBehaviour
 
         Debug.Log("health changing");
         healthBar.HealedOverlay(); //QQ i think this one is correctly showing? but the one on top shouldnt be showing on the person who attack.
-
+        HealOverlayClientRpc();
     }
 
     [ClientRpc]
@@ -512,6 +512,12 @@ public class PlayerNetwork : NetworkBehaviour
     public void NotifyClientsReadyClientRpc()
     {
         CattibalGameManager.Instance.numOfPlayers = CattibalGameManager.Instance.totalPlayers;
+    }
+
+    [ClientRpc]
+    public void HealOverlayClientRpc()
+    {
+        healthBar.HealedOverlay();
     }
 
     private Material GetCatSkins(CattibalLobbyManager.PlayerSkin playerSkin)

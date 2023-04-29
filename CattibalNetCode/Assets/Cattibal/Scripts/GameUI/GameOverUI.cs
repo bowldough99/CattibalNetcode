@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using Unity.Netcode;
+using UnityEngine.SceneManagement;
+using Unity.Services.Authentication;
 
 public class GameOverUI : MonoBehaviour
 {
@@ -93,9 +96,13 @@ public class GameOverUI : MonoBehaviour
 
     public void LeaveGame()
     {
-        CattibalGameManager.Instance.ResetGameManager();
-        CattibalLobbyManager.Instance.ResetLobby();
-        GameObject.FindObjectOfType<TutorialUI>(true).Reset();
-        gameObject.SetActive(false);
+        //CattibalGameManager.Instance.ResetGameManager();
+        //CattibalLobbyManager.Instance.ResetLobby();
+        //GameObject.FindObjectOfType<TutorialUI>(true).Reset();
+        //gameObject.SetActive(false);
+
+        NetworkManager.Singleton.Shutdown();
+        AuthenticationService.Instance.SignOut();
+        SceneManager.LoadScene(0);
     }
 }
