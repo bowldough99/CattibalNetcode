@@ -50,7 +50,6 @@ namespace DissolveExample
             {
                 materials[i].SetFloat("_Dissolve", value);
             }
-            Debug.Log("dissolve start");
         }
 
 

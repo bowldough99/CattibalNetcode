@@ -31,7 +31,7 @@ public class CattibalGameManager : NetworkBehaviour
     public TMP_Text itemSpawnedText;
     public Image itemSpawnedTextBox;
     public GameObject gameTimer;
-
+    public TMP_Text waitingForPlayersText;
 
     private bool ClientGameOver;
     private bool ClientGameStarted;
@@ -67,6 +67,7 @@ public class CattibalGameManager : NetworkBehaviour
 
         state = State.WaitingToStart;
         spawnPoints = GameObject.FindGameObjectsWithTag("Spawn");
+
         ShuffleSpawns();
     }
 
@@ -76,7 +77,6 @@ public class CattibalGameManager : NetworkBehaviour
     {
         if (state == State.GameOver) return;
         Debug.Log(state);
-
         switch (state)
         {
             case State.WaitingToStart:
@@ -94,6 +94,7 @@ public class CattibalGameManager : NetworkBehaviour
                 }
                 break;
             case State.CountdownToStart:
+                waitingForPlayersText.gameObject.SetActive(false);
                 countdown.gameObject.SetActive(true);
                 countdownToStartTimer -= Time.deltaTime;
                 countdown.text = ((int)countdownToStartTimer).ToString();
@@ -132,17 +133,6 @@ public class CattibalGameManager : NetworkBehaviour
         return state == State.GamePlaying;
     }
 
-    public void PauseGame()
-    {
-        // need to consider pausing for everyone
-    }
-
-    public void LeaveGame()
-    {
-        // if host, the whole game ends and returns everyone to main menu
-
-        // if client, handle client disconnected
-    }
     public void registerPlayer()
     {
         Debug.Log("player redy");
@@ -154,7 +144,7 @@ public class CattibalGameManager : NetworkBehaviour
     {
         for (int i = 0; i < spawnPoints.Length; i++)
         {
-            int rnd = UnityEngine.Random.Range(0, spawnPoints.Length);
+            int rnd = Random.Range(0, spawnPoints.Length);
             GameObject tempGO = spawnPoints[rnd];
             spawnPoints[rnd] = spawnPoints[i];
             spawnPoints[i] = tempGO;
