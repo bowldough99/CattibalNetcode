@@ -80,6 +80,7 @@ public class CattibalGameManager : NetworkBehaviour
         switch (state)
         {
             case State.WaitingToStart:
+                waitingForPlayersText.color = new Color(1f, 1f, 1f, Mathf.PingPong(Time.time * 0.5f, 1));
                 deadplayers.Clear();
                 countdown.text = "";
                 gameTimerText.text = "";

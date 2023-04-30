@@ -21,18 +21,25 @@ public class PlayerNetwork : NetworkBehaviour
     [Header("Player Settings")]
     public HealthBar healthBar;
     public HungerBar hungerBar;
+    public LivesHunger livesHungerBar;
 
     private const int defaultHp = 90;
     private const int defaultHunger = 100;
+    private const int defaultLives = 9;
 
     private NetworkVariable<int> hp = new NetworkVariable<int>(defaultHp);
     private NetworkVariable<int> hunger = new NetworkVariable<int>(defaultHunger);
-    private NetworkVariable<int> lives = new NetworkVariable<int>(9);
+    private NetworkVariable<int> lives = new NetworkVariable<int>(defaultLives);
+    private NetworkVariable<int> newHunger = new NetworkVariable<int>(9);
 
     private const float HUNGER_INCREASE_TIMER_MAX = 0.5f;
     private const float HEALTH_DECREASE_TIMER_MAX = 5f;
     private float hungerIncreaseTimer;
     private float healthDecreaseTimer;
+
+    private float timerToHungry = 5f;
+    private float timerToStarve = 5f;
+
 
     [SerializeField] private Transform playerHand;
     [SerializeField] private float minimumAttackDistance = 1.0f;
@@ -90,11 +97,6 @@ public class PlayerNetwork : NetworkBehaviour
     {
         CameraManager.Instance.ShowFirstPersonView();
 
-        //playerData.OnValueChanged += (MyCustomData previousValue, MyCustomData newValue) =>
-        //{
-        //    Debug.Log(OwnerClientId + "; randomNumber:" + newValue._int + ";" + newValue._bool + ";" + newValue._float + ";" + newValue.message);
-        //};
-
         if (healthBar == null)
         {
             healthBar = GameObject.FindObjectOfType<HealthBar>(true);
@@ -102,6 +104,10 @@ public class PlayerNetwork : NetworkBehaviour
         if (hungerBar == null)
         {
             hungerBar = GameObject.FindObjectOfType<HungerBar>(true);
+        }
+        if (livesHungerBar == null)
+        {
+            livesHungerBar = GameObject.FindObjectOfType<LivesHunger>(true);
         }
         if (playerMovement == null)
         {
@@ -119,7 +125,7 @@ public class PlayerNetwork : NetworkBehaviour
         {
             GameObject.FindObjectOfType<TutorialUI>(true).player = this;
         }
-
+        Debug.Log(this.OwnerClientId);
     }
 
     public override void OnNetworkDespawn()
@@ -134,7 +140,7 @@ public class PlayerNetwork : NetworkBehaviour
 
     private void Update()
     {
-        if(hp.Value <= 0)
+        if(hp.Value <= 0 || lives.Value <= 0)
         {
             CattibalGameManager.Instance.KillPlayer(OwnerClientId);
         }
@@ -153,8 +159,6 @@ public class PlayerNetwork : NetworkBehaviour
                     SetSpawnPointServerRpc();
                 }
             }
-            //gameManager.GetComponent<CattibalGameManager>().registerPlayer();
-
             moveToSpawn = true;
         }
 
@@ -162,7 +166,7 @@ public class PlayerNetwork : NetworkBehaviour
         {
             DissolveClientRpc();
         }
-        if (!IsOwner) return; //anything before only works when IsOwner
+        if (!IsOwner) return;
 
 
         if (CattibalGameManager.Instance.IsWinner(OwnerClientId))
@@ -176,7 +180,7 @@ public class PlayerNetwork : NetworkBehaviour
 
         if (!CattibalGameManager.Instance.IsGamePlaying()) return;
 
-        if(hp.Value <= 0)
+        if(hp.Value <= 0 || lives.Value <= 0)
         {
             if (!GameOverUI.instance.gameObject.activeSelf)
             {
@@ -185,67 +189,52 @@ public class PlayerNetwork : NetworkBehaviour
             }
         }
 
-        if (Input.GetKeyDown(KeyCode.T))
+        if (newHunger.Value > 0)
         {
-            HealthServerRPC("ATTACK!", -10);
-            //TestServerRPC(new ServerRpcParams()); //But the client can still press T which shows the Debug in the server logs
-            //TestClientRPC(new ClientRpcParams { Send = new ClientRpcSendParams {TargetClientIds = new List<ulong> { 1 } } }); //But the client can still press T which shows the Debug in the server logs
-            //spawnedObjectTransform = Instantiate(spawnedObjectPrefab);
-            //spawnedObjectTransform.GetComponent<NetworkObject>().Spawn(true); //if i want to allow client to spawn this, it needs to be in the ServerRPC
-
-            //playerData.Value = new MyCustomData
-            //{
-            //    _int = 10,
-            //    _bool = true,
-            //    _float = 0.5f,
-            //    message = "Attacked",
-            //    _health = 10
-            //};
-        }
-
-
-        if (Input.GetKeyDown(KeyCode.V))
-        {
-            HealthServerRPC("HEAL!", 5);
-            HungerServerRPC("EAT!", -100);
-        }
-
-        hungerIncreaseTimer += Time.deltaTime;
-
-        if (hungerIncreaseTimer >= HUNGER_INCREASE_TIMER_MAX)
-        {
-            HungerServerRPC("hungry...", -5);
-            hungerIncreaseTimer = 0;
-        }
-
-        if (hunger.Value == 0)
-        {
-            healthDecreaseTimer += Time.deltaTime;
-
-            if (healthDecreaseTimer >= HEALTH_DECREASE_TIMER_MAX)
+            livesHungerBar.VeryHungry = false;
+            timerToHungry -= Time.deltaTime;
+            if (timerToHungry > 0)
             {
-                HealthServerRPC("lose hp", 0); //change this back to a number later
-                //HealthSourceServerRpc(-5, -1);
-                healthDecreaseTimer = 0;
+                //this timer blinks the next hunger icon to lose
+                livesHungerBar.Hungry = true;
             }
+            if (timerToHungry <= 0)
+            {
+                //this resets the blinking of next hunger icon
+                HungerServerRPC("losing hunger by", 1, this.OwnerClientId);
+                timerToHungry = 5f;
+            }
+        }
+        else
+        {
+            livesHungerBar.VeryHungry = true;
+        }
 
+        if (livesHungerBar.VeryHungry)
+        {
+            timerToStarve -= Time.deltaTime;
+            if(timerToStarve > 0)
+            {
+
+            }
+            if(timerToStarve <= 0)
+            {
+                HealthServerRPC("dying by", 1, this.OwnerClientId);
+                timerToStarve = 5f;
+            }
+        }
+        else
+        {
+            timerToStarve = 5f;
         }
 
         healthBar.updateHP(hp.Value / 100.0f);
         hungerBar.updateHunger(hunger.Value / 100.0f);
+        livesHungerBar.UpdateLivesHunger(lives.Value, newHunger.Value);
+        Debug.Log(newHunger.Value);
 
-        //if (IsClient && IsOwner)
-        //{
-        //
-        //    if (playerMovement.IsAttacking == true)
-        //    {
-        //        //CheckPunch(transform);
-        //        CheckPunch(playerHand.transform);
-        //    }
-        //}
         if (playerMovement.IsAttacking == true)
         {
-            //CheckPunch(transform);
             CheckPunch(playerHand.transform);
         }
 
@@ -275,7 +264,7 @@ public class PlayerNetwork : NetworkBehaviour
             var playerHit = hit.transform.parent.GetComponent<NetworkObject>();
             if (playerHit != null)
             {
-                UpdateHealthServerRPC(20, playerHit.OwnerClientId);
+                UpdateHealthServerRPC(20, playerHit.OwnerClientId); // QQ i think this is being called twice? should this be removed?
                 Debug.Log(playerHit.OwnerClientId);
                 healthBar.HealedOverlay();
             }
@@ -297,10 +286,11 @@ public class PlayerNetwork : NetworkBehaviour
             hp.Value = 100;
         }
 
-        if (hp.Value <= 0)
+        if (hp.Value <= 0 || lives.Value <= 0)
         {
             _isAlive = false;
             hp.Value = 0;
+            lives.Value = 0;
             CattibalGameManager.Instance.KillPlayer(OwnerClientId);
 
             if (id < 0)
@@ -327,55 +317,6 @@ public class PlayerNetwork : NetworkBehaviour
     public void NotifyStarveClientRpc(string victim)
     {
         UIKillMessages.instance.AddStarveMessage(victim);
-    }
-
-    [ServerRpc]
-    //impt: the name of function must end with ServerRPC
-    public void HealthServerRPC(string message, int healthChange)
-    //private void TestServerRpc(ServerRpcParams serverRpcParams)
-    {
-        Debug.Log("HealthServerRPC" + OwnerClientId + "; " + message);
-        hp.Value += healthChange;
-        if (hp.Value > 100)
-        {
-            hp.Value = 100;
-        }
-
-        if (hp.Value <= 0 && IsOwner)
-        {
-            hp.Value = 0;
-            Debug.Log("player is dead");
-            _isAlive = false;
-
-        }
-        if (healthChange > 0)
-        {
-            healthBar.HealedOverlay();
-        }
-        else if (healthChange < 0)
-        {
-            healthBar.DamagedOverlay();
-        }
-
-        //Everything that is put here will only run in the server/host but not in client 
-        //Debug.Log("TestServerRPC" + OwnerClientId + ";" + message);
-        //Debug.Log("TestServerRPC" + OwnerClientId + ";" + serverRpcParams.Receive.SenderClientId);
-        //this is a good place to send strings as compare to using the FixedString method
-        //this is a good function to use to get messages from clients if i want the client to not have ownership
-    }
-    [ServerRpc]
-    public void HungerServerRPC(string message, int hungerChange)
-    {
-        Debug.Log("HungerServerRPC" + OwnerClientId + "; " + message);
-        hunger.Value += hungerChange;
-        if (hunger.Value > 100)
-        {
-            hunger.Value = 100;
-        }
-        if (hunger.Value <= 100)
-        {
-            hunger.Value = 0;
-        }
     }
 
     [ServerRpc]
@@ -495,18 +436,113 @@ public class PlayerNetwork : NetworkBehaviour
         Debug.Log("Got punched" + healthDamaged);
     }
 
-    [ClientRpc]
-    //impt: the name of function must end with ServerRPC
-    //private void TestServerRPC(string message)
-    private void TestClientRpc(ClientRpcParams clientRpcParams)
-    {
-        //Everything that is put here will only run in the server/host but not in client
-        //The difference is that in ClientRPC, even if the player tries to press T, this would not do anything
-        //This place is purely to send msg from Server to Client (maybe i can do pause?)
-        //Special: this function params allow server to send data to one or more particular ClientId
 
-        //targetClientId
+    //////////////////////////////////////////////////////GRACE COPY TO TRY//////////////////////////////////////////////////
+    
+    [ServerRpc]
+    public void HealthServerRPC(string message, int healthChange, ulong clientId)
+    {
+        var clientDamaged = NetworkManager.Singleton.ConnectedClients[clientId].PlayerObject.GetComponent<PlayerNetwork>();
+        if (clientDamaged != null && clientDamaged.lives.Value > 0 && clientDamaged.lives.Value <= 9)
+        {
+            //clientDamaged.lives.Value -= healthChange;
+            clientDamaged.GraceDamageClient(-healthChange);
+            clientDamaged.livesHungerBar.Loselife(lives.Value);
+            if (clientDamaged.IsOwner)
+            {
+                clientDamaged.healthBar.DamagedOverlay(); //QQ is this supposed to be where the client who got hit get the damaged overlay??
+            }
+            else
+            {
+                clientDamaged.DamagedOverlayClientRpc();
+            }
+        }
+        else
+        {
+            Debug.Log(string.Format("which lost child is this. {0}", clientId));
+        }
+
+        NotifyHealthChangedClientRpc(healthChange, new ClientRpcParams
+        {
+            Send = new ClientRpcSendParams
+            {
+                TargetClientIds = new ulong[] { clientId }
+            }
+        });
     }
+
+    [ServerRpc]
+    public void HungerServerRPC(string message, int amount, ulong clientId)
+    {
+        var clientDamaged = NetworkManager.Singleton.ConnectedClients[clientId].PlayerObject.GetComponent<PlayerNetwork>();
+        if (clientDamaged != null && clientDamaged.newHunger.Value > 0 && clientDamaged.newHunger.Value <= 9)
+        {
+            //clientDamaged.newHunger.Value -= amount;
+            clientDamaged.GraceHungerClient(-amount);
+            livesHungerBar.LoseHunger(newHunger.Value);
+            if (clientDamaged.IsOwner)
+            {
+                clientDamaged.healthBar.HealedOverlay(); //QQ is this supposed to be where the client who got hit get the damaged overlay??
+            }
+            else
+            {
+                clientDamaged.HealOverlayClientRpc();
+            }
+        }
+        else
+        {
+            Debug.Log(string.Format("which lost child is this. {0}", clientId));
+        }
+
+        NotifyHealthChangedClientRpc(amount, new ClientRpcParams
+        {
+            Send = new ClientRpcSendParams
+            {
+                TargetClientIds = new ulong[] { clientId }
+            }
+        });
+    }
+    [ServerRpc]
+    public void RegainHungerServerRPC(string message)
+    {
+        Debug.Log("HungerServerRPC" + OwnerClientId + "; " + message);
+        newHunger.Value = 9;
+        livesHungerBar.RegainFullness();
+    }
+    public void GraceDamageClient(int damage)
+    {
+        if (NetworkManager.Singleton.IsServer)
+        {
+            lives.Value += damage;
+            if (lives.Value > 9)
+            {
+                lives.Value = 9;
+            }
+
+            if (lives.Value <= 0)
+            {
+                lives.Value = 0;
+                NotifyStarveClientRpc(OwnerClientId.ToString());
+            }
+        }
+    }
+    public void GraceHungerClient(int damage)
+    {
+        if (NetworkManager.Singleton.IsServer)
+        {
+            newHunger.Value += damage; //or is it coz of this?
+            if (newHunger.Value > 9)
+            {
+                newHunger.Value = 9;
+            }
+
+            if (newHunger.Value <= 0)
+            {
+                newHunger.Value = 0;
+            }
+        }
+    }
+
 
     [ServerRpc(RequireOwnership = false)]
     public void NotifyReadyServerRpc()

@@ -33,12 +33,12 @@ public class UIKillMessages : MonoBehaviour
 
     public void AddStarveMessage(string victim)
     {
-        QueueMessage(string.Format("{0} starved!", victim));
+        QueueMessage(string.Format("Cat {0} starved!", victim));
     }
 
     public void AddKillMessage(string killer, string killee)
     {
-        QueueMessage(string.Format("{0} killed {1}!", killer, killee));
+        QueueMessage(string.Format("Cat {0} killed Cat {1}!", killer, killee));
     }
 
     public void QueueMessage(string message)

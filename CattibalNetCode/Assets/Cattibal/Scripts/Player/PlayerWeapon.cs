@@ -46,63 +46,6 @@ public class PlayerWeapon : NetworkBehaviour
         {
             weaponUI.itemNumber = 0;
         }
-        if (Input.GetKeyDown(KeyCode.E))
-        {
-            /*if (itemHeld == "None")
-            {
-                float pickUpDistance = 100f;
-                if (Physics.Raycast(playerTransform.position, playerTransform.forward, out RaycastHit raycastHit, pickUpDistance, pickUpLayerMask))
-                {
-                    Debug.Log(raycastHit.transform);
-                    if (raycastHit.transform.TryGetComponent(out WeaponScript weaponScript))
-                    {
-                        Debug.Log(weaponScript);
-                        if (raycastHit.transform.gameObject.tag == "Catnip")
-                        {
-                            raycastHit.transform.gameObject.GetComponent<NetworkObject>().Despawn();
-                            itemHeld = "Catnip";
-                            weaponUI.itemNumber = 1;
-                            Debug.Log("i collected" + itemHeld);
-                        }
-                        else if (raycastHit.transform.gameObject.tag == "CannedFood")
-                        {
-                            raycastHit.transform.gameObject.GetComponent<NetworkObject>().Despawn();
-                            itemHeld = "CannedFood";
-                            weaponUI.itemNumber = 2;
-                            Debug.Log("i collected a" + itemHeld);
-                        }
-                        else if (raycastHit.transform.gameObject.tag == "Yarnball")
-                        {
-                            raycastHit.transform.gameObject.GetComponent<NetworkObject>().Despawn();
-                            itemHeld = "Yarnball";
-                            weaponUI.itemNumber = 3;
-                            Debug.Log("i collected a" + itemHeld);
-                        }
-                        else if (raycastHit.transform.gameObject.tag == "Box")
-                        {
-                            raycastHit.transform.gameObject.GetComponent<NetworkObject>().Despawn();
-                            itemHeld = "Box";
-                            weaponUI.itemNumber = 4;
-                            Debug.Log("i collected a" + itemHeld);
-                        }
-                        else if (raycastHit.transform.gameObject.tag == "FishBone")
-                        {
-                            raycastHit.transform.gameObject.GetComponent<NetworkObject>().Despawn();
-                            itemHeld = "FishBone";
-                            weaponUI.itemNumber = 5;
-                            Debug.Log("i collected a" + itemHeld);
-                        }
-                        else if (raycastHit.transform.gameObject.tag == "Milk")
-                        {
-                            raycastHit.transform.gameObject.GetComponent<NetworkObject>().Despawn();
-                            itemHeld = "Milk";
-                            weaponUI.itemNumber = 6;
-                            Debug.Log("i collected a" + itemHeld);
-                        }
-
-                    }
-                }*/
-            }
         if (Input.GetKeyDown(KeyCode.F))
         {
             if (itemHeld == "None")
@@ -111,32 +54,32 @@ public class PlayerWeapon : NetworkBehaviour
             }
             else if (itemHeld == "Catnip")
             {
-                playerNetwork.HealthServerRPC("HEAL!", 10);
+                playerNetwork.RegainHungerServerRPC("I am full again!");
                 itemHeld = "None";
             }
             else if (itemHeld == "CannedFood")
             {
-                playerNetwork.HealthServerRPC("HEAL!", 10);
+                playerNetwork.RegainHungerServerRPC("I am full again!");
                 itemHeld = "None";
             }
             else if (itemHeld == "Yarnball")
             {
-                playerNetwork.HealthServerRPC("HEAL!", 10);
+                playerNetwork.RegainHungerServerRPC("I am full again!");
                 itemHeld = "None";
             }
             else if (itemHeld == "Box")
             {
-                playerNetwork.HealthServerRPC("HEAL!", 10);
+                playerNetwork.RegainHungerServerRPC("I am full again!");
                 itemHeld = "None";
             }
             else if (itemHeld == "FishBone")
             {
-                playerNetwork.HealthServerRPC("HEAL!", 10);
+                playerNetwork.RegainHungerServerRPC("I am full again!");
                 itemHeld = "None";
             }
             else if (itemHeld == "Milk")
             {
-                playerNetwork.HealthServerRPC("HEAL!", 10);
+                playerNetwork.RegainHungerServerRPC("I am full again!");
                 itemHeld = "None";
             }
 
