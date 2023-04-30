@@ -141,8 +141,19 @@ public class PlayerNetwork : NetworkBehaviour
 
         if (!moveToSpawn)
         {
+            if(IsOwner)
+            {
+                if (NetworkManager.Singleton.IsHost)
+                {
+                    Debug.Log(string.Format("move {0}", OwnerClientId));
+                    transform.position = gameManager.GetComponent<CattibalGameManager>().getSpawnPoint((int)OwnerClientId);
+                }
+                else
+                {
+                    SetSpawnPointServerRpc();
+                }
+            }
             //gameManager.GetComponent<CattibalGameManager>().registerPlayer();
-            transform.position = gameManager.GetComponent<CattibalGameManager>().getSpawnPoint();
 
             moveToSpawn = true;
         }
@@ -518,6 +529,18 @@ public class PlayerNetwork : NetworkBehaviour
     public void HealOverlayClientRpc()
     {
         healthBar.HealedOverlay();
+    }
+
+    [ServerRpc]
+    public void SetSpawnPointServerRpc()
+    {
+        SetSpawnPointClientRpc(gameManager.GetComponent<CattibalGameManager>().getSpawnPoint((int)OwnerClientId));
+    }
+
+    [ClientRpc]
+    public void SetSpawnPointClientRpc(Vector3 position)
+    {
+        transform.position = position;
     }
 
     private Material GetCatSkins(CattibalLobbyManager.PlayerSkin playerSkin)

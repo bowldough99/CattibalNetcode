@@ -152,9 +152,9 @@ public class CattibalGameManager : NetworkBehaviour
         Debug.Log(spawnPoints);
     }
 
-    public Vector3 getSpawnPoint()
+    public Vector3 getSpawnPoint(int id)
     {
-        return spawnPoints[numOfPlayers].GetComponent<Transform>().position;
+        return spawnPoints[id % spawnPoints.Length].GetComponent<Transform>().position;
     }
 
     void UpdateGameTimer(float currentTime)
