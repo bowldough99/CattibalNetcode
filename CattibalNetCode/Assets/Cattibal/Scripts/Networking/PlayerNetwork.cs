@@ -201,7 +201,7 @@ public class PlayerNetwork : NetworkBehaviour
             if (timerToHungry <= 0)
             {
                 //this resets the blinking of next hunger icon
-                HungerServerRPC("losing hunger by", 5, this.OwnerClientId);
+                HungerServerRPC("losing hunger by", 1, this.OwnerClientId);
                 timerToHungry = 5f;
             }
         }
@@ -219,7 +219,7 @@ public class PlayerNetwork : NetworkBehaviour
             }
             if(timerToStarve <= 0)
             {
-                HealthServerRPC("dying by", 5, this.OwnerClientId);
+                HealthServerRPC("dying by", 1, this.OwnerClientId);
                 timerToStarve = 5f;
             }
         }
