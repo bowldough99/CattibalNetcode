@@ -248,6 +248,7 @@ public class PlayerNetwork : NetworkBehaviour
         {
             Debug.Log("NEW ATTACK CODE HIIIT");
             UpdateHealthServerRPC(20, target.OwnerClientId);
+            playerMovement.OnHitScratched();
             //target.HealthSourceServerRpc(-20, (int)OwnerClientId);
         }
 
@@ -264,6 +265,7 @@ public class PlayerNetwork : NetworkBehaviour
             var playerHit = hit.transform.parent.GetComponent<NetworkObject>();
             if (playerHit != null)
             {
+                playerMovement.OnHitScratched();
                 UpdateHealthServerRPC(20, playerHit.OwnerClientId); // QQ i think this is being called twice? should this be removed?
                 Debug.Log(playerHit.OwnerClientId);
                 healthBar.HealedOverlay();

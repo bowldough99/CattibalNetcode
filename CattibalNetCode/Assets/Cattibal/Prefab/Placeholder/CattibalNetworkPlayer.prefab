@@ -114,8 +114,8 @@ MonoBehaviour:
   - {fileID: 8300000, guid: a3194b8bbc96ef84fab1f98f4b7dae3e, type: 3}
   FootstepAudioVolume: 0.5
   DeathAudioClip: {fileID: 0}
-  ScratchedAudioClip: {fileID: 0}
-  ScratchingAudioClip: {fileID: 0}
+  ScratchedAudioClip: {fileID: 8300000, guid: cf8483b70eb419142b6dc78b20c237fa, type: 3}
+  ScratchingAudioClip: {fileID: 8300000, guid: 9e4b12f319594b24db0f65d3c859adf6, type: 3}
   JumpHeight: 1.2
   Gravity: -15
   JumpTimeout: 0.5
@@ -329,6 +329,7 @@ MonoBehaviour:
     type: 3}
   healthBar: {fileID: 0}
   hungerBar: {fileID: 0}
+  livesHungerBar: {fileID: 0}
   playerHand: {fileID: 3791217138845952919}
   minimumAttackDistance: 100
   endGameText: {fileID: 0}

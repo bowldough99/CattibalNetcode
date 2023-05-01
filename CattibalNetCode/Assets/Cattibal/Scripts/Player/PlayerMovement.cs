@@ -35,7 +35,7 @@ namespace StarterAssets
 
         public AudioClip LandingAudioClip;
         public AudioClip[] FootstepAudioClips;
-        [Range(0, 1)] public float FootstepAudioVolume = 0.5f;
+        [Range(0, .5f)] public float FootstepAudioVolume = 0.2f;
         public AudioClip DeathAudioClip;
         public AudioClip ScratchedAudioClip;
         public AudioClip ScratchingAudioClip;
@@ -462,7 +462,7 @@ namespace StarterAssets
             }
         }
 
-        private void OnScratched()
+        public void OnHitScratched()
         {
             audioSource.PlayOneShot(ScratchedAudioClip, FootstepAudioVolume);
         }

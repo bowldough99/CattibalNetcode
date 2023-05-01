@@ -1,9 +1,11 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.Services.Authentication;
 using Unity.Services.Lobbies.Models;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 public class LobbyListUI : MonoBehaviour {
 
@@ -16,6 +18,7 @@ public class LobbyListUI : MonoBehaviour {
     [SerializeField] private Transform container;
     [SerializeField] private Button refreshButton;
     [SerializeField] private Button createLobbyButton;
+    [SerializeField] private Button returnToMainMenuButton;
 
 
     private string lobbyName;
@@ -30,6 +33,11 @@ public class LobbyListUI : MonoBehaviour {
 
         refreshButton.onClick.AddListener(RefreshButtonClick);
         createLobbyButton.onClick.AddListener(CreateLobbyButtonClick);
+        returnToMainMenuButton.onClick.AddListener(() =>
+        {
+            AuthenticationService.Instance.SignOut();
+            Loader.Load(Loader.Scene.MainMenuScene);
+        });
     }
 
     private void Start() {
