@@ -11,10 +11,22 @@ public class LivesHunger : MonoBehaviour
     public int hungerRemaining;
     public bool Hungry = false;
     public bool VeryHungry = false;
+
+    List<GameObject> toFadeOutList = new List<GameObject>();
+    HashSet<int> toFadeOutLivesSet = new HashSet<int>();
+
     public void Loselife(int amt)
     {
         if(livesRemaining == 0) return;
-        StartCoroutine(FadeImage(lives[amt].gameObject));
+        //StartCoroutine(FadeImage(lives[amt].gameObject));
+        //toFadeOutList.Add(lives[amt].gameObject);
+        for(int i = amt; i < 9; ++i)
+        {
+            if(!toFadeOutLivesSet.Contains(i))
+            {
+                toFadeOutLivesSet.Add(i);
+            }
+        }
         if(livesRemaining == 0)
         {
             //DEAD
@@ -23,7 +35,8 @@ public class LivesHunger : MonoBehaviour
 
     public void LoseHunger(int amt)
     {
-        StartCoroutine(FadeImage(hunger[amt].gameObject));
+        //StartCoroutine(FadeImage(hunger[amt].gameObject));
+        toFadeOutList.Add(hunger[amt].gameObject);
         if (hungerRemaining == 0 && livesRemaining != 0)
         {
             VeryHungry = true;
@@ -70,6 +83,33 @@ public class LivesHunger : MonoBehaviour
         if (Hungry && hungerRemaining > 0)
         {
             hunger[hungerRemaining - 1].color = new Color(1f, 1f, 1f, Mathf.PingPong(Time.time * 0.8f, 1));
+        }
+
+        for(int i = 0; i < toFadeOutList.Count; ++i)
+        {
+            Image image = toFadeOutList[i].GetComponent<Image>();
+            if (image.color.a > 0)
+            {
+                image.color -= new Color(0, 0, 0, 1) * Time.deltaTime;
+            }
+            else
+            {
+                image.enabled = false;
+            }
+        }
+
+        foreach(int i in toFadeOutLivesSet)
+        {
+            Image image = lives[i];
+
+            if (image.color.a > 0)
+            {
+                image.color -= new Color(0, 0, 0, 1) * Time.deltaTime;
+            }
+            else
+            {
+                image.enabled = false;
+            }
         }
     }
 }

@@ -201,7 +201,7 @@ public class PlayerNetwork : NetworkBehaviour
             if (timerToHungry <= 0)
             {
                 //this resets the blinking of next hunger icon
-                HungerServerRPC("losing hunger by", 1, this.OwnerClientId);
+                HungerServerRPC("losing hunger by", 5, this.OwnerClientId);
                 timerToHungry = 5f;
             }
         }
@@ -219,7 +219,7 @@ public class PlayerNetwork : NetworkBehaviour
             }
             if(timerToStarve <= 0)
             {
-                HealthServerRPC("dying by", 1, this.OwnerClientId);
+                HealthServerRPC("dying by", 5, this.OwnerClientId);
                 timerToStarve = 5f;
             }
         }
@@ -247,7 +247,7 @@ public class PlayerNetwork : NetworkBehaviour
         if(target != null)
         {
             Debug.Log("NEW ATTACK CODE HIIIT");
-            UpdateHealthServerRPC(20, target.OwnerClientId);
+            UpdateHealthServerRPC(10, target.OwnerClientId);
             playerMovement.OnHitScratched();
             //target.HealthSourceServerRpc(-20, (int)OwnerClientId);
         }
@@ -266,7 +266,7 @@ public class PlayerNetwork : NetworkBehaviour
             if (playerHit != null)
             {
                 playerMovement.OnHitScratched();
-                UpdateHealthServerRPC(20, playerHit.OwnerClientId); // QQ i think this is being called twice? should this be removed?
+                UpdateHealthServerRPC(10, playerHit.OwnerClientId); // QQ i think this is being called twice? should this be removed?
                 Debug.Log(playerHit.OwnerClientId);
                 healthBar.HealedOverlay();
             }
@@ -327,10 +327,12 @@ public class PlayerNetwork : NetworkBehaviour
         var clientDamaged = NetworkManager.Singleton.ConnectedClients[clientId].PlayerObject.GetComponent<PlayerNetwork>();
         if (clientDamaged != null && clientDamaged.hp.Value > 0 && clientDamaged.hp.Value <= 100)
         {
-            clientDamaged.hp.Value -= healthDamaged;
+            //clientDamaged.hp.Value -= healthDamaged;
             //clientDamaged.NotifyDamageClientRpc(-healthDamaged, (int)OwnerClientId);
             clientDamaged.DamageClient(-healthDamaged, (int)OwnerClientId);
-            if(clientDamaged.IsOwner)
+            clientDamaged.lives.Value -= 1;
+
+            if (clientDamaged.IsOwner)
             {
                 clientDamaged.healthBar.DamagedOverlay(); //QQ is this supposed to be where the client who got hit get the damaged overlay??
             }
@@ -348,17 +350,18 @@ public class PlayerNetwork : NetworkBehaviour
             Debug.Log(string.Format("which lost child is this. {0}", clientId));
         }
 
-        NotifyHealthChangedClientRpc(healthDamaged, new ClientRpcParams
+        clientDamaged.NotifyHealthChangedClientRpc(healthDamaged, new ClientRpcParams
         {
             Send = new ClientRpcSendParams
             {
                 TargetClientIds = new ulong[] { clientId }
             }
         });
+        clientDamaged.livesHungerBar.Loselife(lives.Value);
 
         Debug.Log("health changing");
-        healthBar.HealedOverlay(); //QQ i think this one is correctly showing? but the one on top shouldnt be showing on the person who attack.
-        HealOverlayClientRpc();
+        //healthBar.HealedOverlay(); //QQ i think this one is correctly showing? but the one on top shouldnt be showing on the person who attack.
+        //HealOverlayClientRpc();
     }
 
     [ClientRpc]
@@ -434,7 +437,9 @@ public class PlayerNetwork : NetworkBehaviour
     [ClientRpc]
     public void NotifyHealthChangedClientRpc(int healthDamaged, ClientRpcParams clientRpcParams = default)
     {
-        if (IsOwner) return;
+        if (!IsOwner) return;
+        livesHungerBar.LoseHunger(newHunger.Value);
+        livesHungerBar.Loselife(lives.Value);
         Debug.Log("Got punched" + healthDamaged);
     }
 

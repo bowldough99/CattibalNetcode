@@ -79,10 +79,19 @@ public class LobbyListUI : MonoBehaviour {
     }
 
     private void UpdateLobbyList(List<Lobby> lobbyList) {
+
+        Queue<Transform> toDeleteList = new Queue<Transform>();
+
         foreach (Transform child in container) {
             if (child == lobbySingleTemplate) continue;
+            toDeleteList.Enqueue(child);
+        }
 
-            Destroy(child.gameObject);
+        while(toDeleteList.Count > 0)
+        {
+            Transform toDelete = toDeleteList.Dequeue();
+            toDelete.SetParent(null);
+            Destroy(toDeleteList.Dequeue().gameObject);
         }
 
         foreach (Lobby lobby in lobbyList) {
