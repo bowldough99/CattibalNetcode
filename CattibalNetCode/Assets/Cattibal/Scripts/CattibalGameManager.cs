@@ -140,6 +140,11 @@ public class CattibalGameManager : NetworkBehaviour
         numOfPlayers++;
     }
 
+    public bool HasGameTimerEned()
+    {
+        return gamePlayingTimer <= 0;
+    }
+
 
     public void ShuffleSpawns()
     {

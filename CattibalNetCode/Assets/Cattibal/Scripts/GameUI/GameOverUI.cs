@@ -24,6 +24,8 @@ public class GameOverUI : MonoBehaviour
     public GameObject buttons;
     public float delay = 3.0f;
     bool activated = false;
+    public Image gameoverImage;
+    public Image[] victoryDefeatImages;
 
     // Start is called before the first frame update
     void Start()
@@ -68,6 +70,7 @@ public class GameOverUI : MonoBehaviour
         }
         activated = true;
         gameoverText.gameObject.SetActive(false);
+        //gameoverImage.gameObject.SetActive(false);
         buttons.SetActive(false);
         gameoverText.text = "Victory!";
         StartCoroutine("StartFade");

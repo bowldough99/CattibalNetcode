@@ -14,6 +14,7 @@ public class LivesHunger : MonoBehaviour
 
     List<GameObject> toFadeOutList = new List<GameObject>();
     HashSet<int> toFadeOutLivesSet = new HashSet<int>();
+    HashSet<int> toFadeOutHungerSet = new HashSet<int>();
 
     public void Loselife(int amt)
     {
@@ -36,7 +37,14 @@ public class LivesHunger : MonoBehaviour
     public void LoseHunger(int amt)
     {
         //StartCoroutine(FadeImage(hunger[amt].gameObject));
-        toFadeOutList.Add(hunger[amt].gameObject);
+        //toFadeOutList.Add(hunger[amt].gameObject);
+        for (int i = amt; i < 9; ++i)
+        {
+            if (!toFadeOutHungerSet.Contains(i))
+            {
+                toFadeOutHungerSet.Add(i);
+            }
+        }
         if (hungerRemaining == 0 && livesRemaining != 0)
         {
             VeryHungry = true;
@@ -72,18 +80,18 @@ public class LivesHunger : MonoBehaviour
 
     private void Update()
     {
-        if (VeryHungry && livesRemaining > 0)
-        {
-            lives[livesRemaining - 1].color = new Color(1f, 1f, 1f, Mathf.PingPong(Time.time * 0.8f, 1));
-        }
-        else if (VeryHungry = false && livesRemaining > 0)
-        {
-            lives[livesRemaining - 1].color = new Color(1f, 1f, 1f, 1f);
-        }
-        if (Hungry && hungerRemaining > 0)
-        {
-            hunger[hungerRemaining - 1].color = new Color(1f, 1f, 1f, Mathf.PingPong(Time.time * 0.8f, 1));
-        }
+        //if (VeryHungry && livesRemaining > 0)
+        //{
+        //    lives[livesRemaining - 1].color = new Color(1f, 1f, 1f, Mathf.PingPong(Time.time * 0.8f, 1));
+        //}
+        //else if (VeryHungry = false && livesRemaining > 0)
+        //{
+        //    lives[livesRemaining - 1].color = new Color(1f, 1f, 1f, 1f);
+        //}
+        //if (Hungry && hungerRemaining > 0)
+        //{
+        //    hunger[hungerRemaining - 1].color = new Color(1f, 1f, 1f, Mathf.PingPong(Time.time * 0.8f, 1));
+        //}
 
         for(int i = 0; i < toFadeOutList.Count; ++i)
         {
@@ -101,6 +109,19 @@ public class LivesHunger : MonoBehaviour
         foreach(int i in toFadeOutLivesSet)
         {
             Image image = lives[i];
+
+            if (image.color.a > 0)
+            {
+                image.color -= new Color(0, 0, 0, 1) * Time.deltaTime;
+            }
+            else
+            {
+                image.enabled = false;
+            }
+        }
+        foreach (int i in toFadeOutHungerSet)
+        {
+            Image image = hunger[i];
 
             if (image.color.a > 0)
             {

@@ -197,13 +197,13 @@ namespace StarterAssets
             _hasAnimator = TryGetComponent(out _animator);
 
             // remove controls when game is not ready
-            if(!CattibalGameManager.Instance.IsGamePlaying())
+            if (!CattibalGameManager.Instance.IsGamePlaying())
             {
                 return;
             }
 
             // DED
-            if(!GetComponent<PlayerNetwork>().IsAlive)
+            if (!GetComponent<PlayerNetwork>().IsAlive)
             {
                 return;
             }

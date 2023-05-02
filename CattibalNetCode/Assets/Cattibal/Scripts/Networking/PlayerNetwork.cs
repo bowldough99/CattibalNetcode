@@ -125,7 +125,6 @@ public class PlayerNetwork : NetworkBehaviour
         {
             GameObject.FindObjectOfType<TutorialUI>(true).player = this;
         }
-        Debug.Log(this.OwnerClientId);
     }
 
     public override void OnNetworkDespawn()
@@ -140,8 +139,9 @@ public class PlayerNetwork : NetworkBehaviour
 
     private void Update()
     {
-        if(hp.Value <= 0 || lives.Value <= 0)
+        if(lives.Value <= 0)
         {
+            DissolveClientRpc();
             CattibalGameManager.Instance.KillPlayer(OwnerClientId);
         }
 
@@ -164,9 +164,13 @@ public class PlayerNetwork : NetworkBehaviour
 
         if (!_isAlive)
         {
-            DissolveClientRpc();
+        }
+        if (CattibalGameManager.Instance.HasGameTimerEned())
+        {
+            lives.Value = 0;
         }
         if (!IsOwner) return;
+
 
 
         if (CattibalGameManager.Instance.IsWinner(OwnerClientId))
@@ -180,8 +184,9 @@ public class PlayerNetwork : NetworkBehaviour
 
         if (!CattibalGameManager.Instance.IsGamePlaying()) return;
 
-        if(hp.Value <= 0 || lives.Value <= 0)
+        if(lives.Value <= 0)
         {
+            //_isAlive = false;
             if (!GameOverUI.instance.gameObject.activeSelf)
             {
                 GameOverUI.instance.gameObject.SetActive(true);
@@ -202,7 +207,7 @@ public class PlayerNetwork : NetworkBehaviour
             {
                 //this resets the blinking of next hunger icon
                 HungerServerRPC("losing hunger by", 1, this.OwnerClientId);
-                timerToHungry = 5f;
+                timerToHungry = 10f;
             }
         }
         else
@@ -228,9 +233,9 @@ public class PlayerNetwork : NetworkBehaviour
             timerToStarve = 5f;
         }
 
-        healthBar.updateHP(hp.Value / 100.0f);
-        hungerBar.updateHunger(hunger.Value / 100.0f);
-        livesHungerBar.UpdateLivesHunger(lives.Value, newHunger.Value);
+        //healthBar.updateHP(hp.Value / 100.0f);
+        //hungerBar.updateHunger(hunger.Value / 100.0f);
+        //livesHungerBar.UpdateLivesHunger(lives.Value, newHunger.Value);
         Debug.Log(newHunger.Value);
 
         if (playerMovement.IsAttacking == true)
@@ -247,13 +252,13 @@ public class PlayerNetwork : NetworkBehaviour
         if(target != null)
         {
             Debug.Log("NEW ATTACK CODE HIIIT");
-            UpdateHealthServerRPC(10, target.OwnerClientId);
+            UpdateHealthServerRPC(1, target.OwnerClientId);
             playerMovement.OnHitScratched();
             //target.HealthSourceServerRpc(-20, (int)OwnerClientId);
         }
 
         return;
-
+        /*
         Debug.Log("DETROIT SSSSMAAAASSHH");
         RaycastHit hit;
 
@@ -277,6 +282,7 @@ public class PlayerNetwork : NetworkBehaviour
             Debug.DrawRay(hand.position, hand.transform.forward * minimumAttackDistance, Color.red);
             Debug.Log("raycast NOT hitting");
         }
+        */
     }
 
     [ServerRpc(RequireOwnership = false)]
@@ -325,12 +331,12 @@ public class PlayerNetwork : NetworkBehaviour
     private void UpdateHealthServerRPC(int healthDamaged, ulong clientId)
     {
         var clientDamaged = NetworkManager.Singleton.ConnectedClients[clientId].PlayerObject.GetComponent<PlayerNetwork>();
-        if (clientDamaged != null && clientDamaged.hp.Value > 0 && clientDamaged.hp.Value <= 100)
+        if (clientDamaged != null && clientDamaged.lives.Value > 0 && clientDamaged.lives.Value <= 9)
         {
             //clientDamaged.hp.Value -= healthDamaged;
             //clientDamaged.NotifyDamageClientRpc(-healthDamaged, (int)OwnerClientId);
             clientDamaged.DamageClient(-healthDamaged, (int)OwnerClientId);
-            clientDamaged.lives.Value -= 1;
+            //clientDamaged.lives.Value -= 1;
 
             if (clientDamaged.IsOwner)
             {
@@ -340,7 +346,7 @@ public class PlayerNetwork : NetworkBehaviour
             {
                 clientDamaged.DamagedOverlayClientRpc();
             }
-            if (clientDamaged.hp.Value <= 0)
+            if (clientDamaged.lives.Value <= 0)
             {
                 clientDamaged._isAlive = false; //QQ if i want to let the game know this particular client died, is it here? coz this seems to be causing the problem in line 360
             }
@@ -391,15 +397,16 @@ public class PlayerNetwork : NetworkBehaviour
         {
             NotifyDamageClientRpc(damage, source);
 
-            hp.Value += damage;
-            if (hp.Value > 100)
+            lives.Value += damage;
+            if (lives.Value > 9)
             {
-                hp.Value = 100;
+                lives.Value = 9;
             }
 
-            if (hp.Value <= 0)
+            if (lives.Value <= 0)
             {
-                hp.Value = 0;
+                lives.Value = 0;
+                _isAlive = false;
                 if (source < 0)
                 {
                     //UIKillMessages.instance.AddStarveMessage(OwnerClientId.ToString());
@@ -440,7 +447,7 @@ public class PlayerNetwork : NetworkBehaviour
         if (!IsOwner) return;
         livesHungerBar.LoseHunger(newHunger.Value);
         livesHungerBar.Loselife(lives.Value);
-        Debug.Log("Got punched" + healthDamaged);
+        //Debug.Log("Got punched" + healthDamaged);
     }
 
 
@@ -489,11 +496,11 @@ public class PlayerNetwork : NetworkBehaviour
             livesHungerBar.LoseHunger(newHunger.Value);
             if (clientDamaged.IsOwner)
             {
-                clientDamaged.healthBar.HealedOverlay(); //QQ is this supposed to be where the client who got hit get the damaged overlay??
+                //clientDamaged.healthBar.HealedOverlay(); //QQ is this supposed to be where the client who got hit get the damaged overlay??
             }
             else
             {
-                clientDamaged.HealOverlayClientRpc();
+                //clientDamaged.HealOverlayClientRpc();
             }
         }
         else
