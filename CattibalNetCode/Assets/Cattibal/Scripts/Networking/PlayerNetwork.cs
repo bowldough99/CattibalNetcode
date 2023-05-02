@@ -37,7 +37,7 @@ public class PlayerNetwork : NetworkBehaviour
     private float hungerIncreaseTimer;
     private float healthDecreaseTimer;
 
-    private float timerToHungry = 5f;
+    private float timerToHungry = 20f;
     private float timerToStarve = 5f;
 
 

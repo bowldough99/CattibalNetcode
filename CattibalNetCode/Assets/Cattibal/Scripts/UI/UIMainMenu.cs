@@ -15,14 +15,19 @@ public class UIMainMenu : MonoBehaviour
 
     [SerializeField] GameObject mainMenuUI;
     [SerializeField] GameObject tutorialUI;
-
+    //public SoundManager soundManager;
 
     private void Awake()
     {
+        //if (soundManager == null)
+        //{
+        //    soundManager = GameObject.FindObjectOfType<SoundManager>(true);
+        //}
         //this is a form of delegate lambda
         playButton.onClick.AddListener(() =>
         {
             playButton.interactable = false;
+            //soundManager.PlayInGameSong();
             Loader.Load(Loader.Scene.GameScene);
         });
         tutorialButton.onClick.AddListener(() =>

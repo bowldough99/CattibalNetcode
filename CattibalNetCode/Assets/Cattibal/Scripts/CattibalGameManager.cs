@@ -54,8 +54,8 @@ public class CattibalGameManager : NetworkBehaviour
     private State state;
     private float waitingToStartTimer = 1f;
     private float countdownToStartTimer = 5f;
-    private float gamePlayingTimer = 200f;
-    private float itemSpawnerTimer = 5f;
+    private float gamePlayingTimer = 300f;
+    private float itemSpawnerTimer = 150f;
     private bool canSpawnItem = true;
 
     public event EventHandler OnGameEnd;

@@ -25,7 +25,7 @@ public class GameOverUI : MonoBehaviour
     public float delay = 3.0f;
     bool activated = false;
     public Image gameoverImage;
-    public Image[] victoryDefeatImages;
+    public Sprite[] victoryDefeatImages;
 
     // Start is called before the first frame update
     void Start()
@@ -41,7 +41,8 @@ public class GameOverUI : MonoBehaviour
 
     private void OnDisable()
     {
-        gameoverText.gameObject.SetActive(false);
+        //gameoverText.gameObject.SetActive(false);
+        gameoverImage.gameObject.SetActive(false);
         buttons.SetActive(false);
         Color fadecolor = fade.color;
         fadecolor.a = 0;
@@ -56,9 +57,11 @@ public class GameOverUI : MonoBehaviour
             return;
         }
         activated = true;
-        gameoverText.gameObject.SetActive(false);
+        //gameoverText.gameObject.SetActive(false);
+        gameoverImage.gameObject.SetActive(false);
         buttons.SetActive(false);
-        gameoverText.text = "Defeat";
+        //gameoverText.text = "Defeat";
+        gameoverImage.sprite = victoryDefeatImages[0];
         StartCoroutine("StartFade");
     }
 
@@ -69,10 +72,11 @@ public class GameOverUI : MonoBehaviour
             return;
         }
         activated = true;
-        gameoverText.gameObject.SetActive(false);
-        //gameoverImage.gameObject.SetActive(false);
+        //gameoverText.gameObject.SetActive(false);
+        gameoverImage.gameObject.SetActive(false);
         buttons.SetActive(false);
-        gameoverText.text = "Victory!";
+        //gameoverText.text = "Victory!";
+        gameoverImage.sprite = victoryDefeatImages[1];
         StartCoroutine("StartFade");
     }
 
@@ -93,7 +97,8 @@ public class GameOverUI : MonoBehaviour
 
         fadecolor.a = fadeTarget;
         fade.color = fadecolor;
-        gameoverText.gameObject.SetActive(true);
+        //gameoverText.gameObject.SetActive(true);
+        gameoverImage.gameObject.SetActive(true);
         buttons.SetActive(true);
     }
 
