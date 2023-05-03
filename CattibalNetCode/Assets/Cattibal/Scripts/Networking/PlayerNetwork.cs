@@ -10,6 +10,7 @@ using UnityEngine.XR;
 using StarterAssets;
 using TMPro;
 using DissolveExample;
+//using UnityEditor.PackageManager;
 
 [RequireComponent(typeof(NetworkTransform))]
 public class PlayerNetwork : NetworkBehaviour
@@ -236,7 +237,7 @@ public class PlayerNetwork : NetworkBehaviour
         //healthBar.updateHP(hp.Value / 100.0f);
         //hungerBar.updateHunger(hunger.Value / 100.0f);
         //livesHungerBar.UpdateLivesHunger(lives.Value, newHunger.Value);
-        Debug.Log(newHunger.Value);
+        //Debug.Log(newHunger.Value);
 
         if (playerMovement.IsAttacking == true)
         {
@@ -253,8 +254,8 @@ public class PlayerNetwork : NetworkBehaviour
         {
             Debug.Log("NEW ATTACK CODE HIIIT");
             UpdateHealthServerRPC(1, target.OwnerClientId);
-            RegainHungerServerRPC("I am full again!");
             //HealOverlayClientRpc();
+            //RegainHungerClientRPC();
             //playerMovement.OnHitScratched();
             //target.HealthSourceServerRpc(-20, (int)OwnerClientId);
         }
@@ -332,9 +333,11 @@ public class PlayerNetwork : NetworkBehaviour
     [ServerRpc]
     private void UpdateHealthServerRPC(int healthDamaged, ulong clientId)
     {
+        HealOverlayClientRpc();
         var clientDamaged = NetworkManager.Singleton.ConnectedClients[clientId].PlayerObject.GetComponent<PlayerNetwork>();
         if (clientDamaged != null && clientDamaged.lives.Value > 0 && clientDamaged.lives.Value <= 9)
         {
+
             //clientDamaged.hp.Value -= healthDamaged;
             //clientDamaged.NotifyDamageClientRpc(-healthDamaged, (int)OwnerClientId);
             clientDamaged.DamageClient(-healthDamaged, (int)OwnerClientId);
@@ -369,7 +372,8 @@ public class PlayerNetwork : NetworkBehaviour
 
         Debug.Log("health changing");
         //healthBar.HealedOverlay(); //QQ i think this one is correctly showing? but the one on top shouldnt be showing on the person who attack.
-        HealOverlayClientRpc();
+        newHunger.Value = 9;
+        RegainHungerClientRPC();
     }
 
     [ClientRpc]
@@ -453,8 +457,9 @@ public class PlayerNetwork : NetworkBehaviour
     }
 
 
+
     //////////////////////////////////////////////////////GRACE COPY TO TRY//////////////////////////////////////////////////
-    
+
     [ServerRpc]
     public void HealthServerRPC(string message, int healthChange, ulong clientId)
     {
@@ -521,10 +526,21 @@ public class PlayerNetwork : NetworkBehaviour
     [ServerRpc]
     public void RegainHungerServerRPC(string message)
     {
-        Debug.Log("HungerServerRPC" + OwnerClientId + "; " + message);
+        //Debug.Log("HungerServerRPC" + OwnerClientId + "; " + message);
         newHunger.Value = 9;
-        livesHungerBar.RegainFullness();
+        RegainHungerClientRPC();
+
     }
+    [ClientRpc]
+    public void RegainHungerClientRPC()
+    {
+        if (IsOwner)
+        {
+            //newHunger.Value = 9;
+            livesHungerBar.RegainFullness();
+        }
+    }
+
     public void GraceDamageClient(int damage)
     {
         if (NetworkManager.Singleton.IsServer)
@@ -580,7 +596,10 @@ public class PlayerNetwork : NetworkBehaviour
     [ClientRpc]
     public void HealOverlayClientRpc()
     {
-        healthBar.HealedOverlay();
+        if (IsOwner)
+        {
+            healthBar.HealedOverlay();
+        }
     }
 
     [ServerRpc]
