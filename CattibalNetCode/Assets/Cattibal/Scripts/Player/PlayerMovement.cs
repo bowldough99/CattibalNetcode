@@ -156,6 +156,7 @@ namespace StarterAssets
             {
                 _cinemachineVirtualCamera = FindObjectOfType<CinemachineVirtualCamera>();
             }
+
         }
 
         private void Start()
@@ -464,7 +465,7 @@ namespace StarterAssets
 
         public void OnHitScratched()
         {
-            audioSource.PlayOneShot(ScratchedAudioClip, FootstepAudioVolume);
+            //audioSource.PlayOneShot(ScratchedAudioClip, FootstepAudioVolume);
         }
 
         private void Attack()

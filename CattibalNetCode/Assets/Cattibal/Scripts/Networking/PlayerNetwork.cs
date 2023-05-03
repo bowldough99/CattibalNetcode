@@ -253,7 +253,9 @@ public class PlayerNetwork : NetworkBehaviour
         {
             Debug.Log("NEW ATTACK CODE HIIIT");
             UpdateHealthServerRPC(1, target.OwnerClientId);
-            playerMovement.OnHitScratched();
+            RegainHungerServerRPC("I am full again!");
+            //HealOverlayClientRpc();
+            //playerMovement.OnHitScratched();
             //target.HealthSourceServerRpc(-20, (int)OwnerClientId);
         }
 
@@ -367,7 +369,7 @@ public class PlayerNetwork : NetworkBehaviour
 
         Debug.Log("health changing");
         //healthBar.HealedOverlay(); //QQ i think this one is correctly showing? but the one on top shouldnt be showing on the person who attack.
-        //HealOverlayClientRpc();
+        HealOverlayClientRpc();
     }
 
     [ClientRpc]

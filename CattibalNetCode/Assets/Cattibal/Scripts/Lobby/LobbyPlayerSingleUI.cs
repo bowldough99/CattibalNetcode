@@ -15,7 +15,7 @@ public class LobbyPlayerSingleUI : MonoBehaviour {
     [SerializeField] private GameObject characterPrefab;
     [SerializeField] private Transform characterLocation;
 
-    private SkinnedMeshRenderer characterRenderer;
+    [SerializeField] private SkinnedMeshRenderer characterRenderer;
     private GameObject character;
     public Material skinToChangeTo;
 
@@ -52,7 +52,8 @@ public class LobbyPlayerSingleUI : MonoBehaviour {
     {
         character = Instantiate(characterPrefab, new Vector3(0, 0, 0), Quaternion.identity) as GameObject;
         character.transform.SetParent(characterLocation.transform, false);
-        characterRenderer = character.GetComponent<SkinnedMeshRenderer>();
+        characterRenderer = character.GetComponentInChildren<SkinnedMeshRenderer>();
+
     }
 
     private Material GetMaterial(CattibalLobbyManager.PlayerSkin playerSkin)
