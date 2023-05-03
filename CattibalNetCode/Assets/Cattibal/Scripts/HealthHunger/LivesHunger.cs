@@ -53,6 +53,7 @@ public class LivesHunger : MonoBehaviour
 
     public void RegainFullness()
     {
+        toFadeOutHungerSet.Clear();
         VeryHungry = false;
         for (int i = 0; i < 9; i++)
         {
